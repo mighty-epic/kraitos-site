@@ -56,7 +56,7 @@ if (canvas && experience) {
   const keyLight = new THREE.DirectionalLight(0xffffff, 2.3);
   keyLight.position.set(0, 6, 7);
   keyLight.castShadow = true;
-  keyLight.shadow.mapSize.set(2048, 2048);
+  keyLight.shadow.mapSize.set(1024, 1024);
   keyLight.shadow.camera.near = 0.5;
   keyLight.shadow.camera.far = 18;
   keyLight.shadow.camera.left = -7;
@@ -88,24 +88,30 @@ if (canvas && experience) {
         if (!object.isMesh) {
           return;
         }
-        object.frustumCulled = false;
-        object.castShadow = true;
-        object.receiveShadow = true;
-
         const name = object.name || "";
+        object.frustumCulled = false;
+        object.castShadow = !/(keyboard_key|laptop_key|screen|floor|grain|camera_dot|status_light|cable_port)/i.test(name);
+        object.receiveShadow = /(floor|desk|wood|frame|stand|keyboard_deck|laptop_base)/i.test(name);
+
         const mats = Array.isArray(object.material) ? object.material : [object.material];
         mats.forEach((mat) => {
           if (!mat) {
             return;
           }
-          if (/frame|stand|keys|graphite|black/i.test(mat.name) || /frame|stand|key|mouse/i.test(name)) {
-            mat.color?.set?.(0x101719);
-            mat.roughness = Math.min(mat.roughness ?? 0.3, 0.32);
-            mat.metalness = Math.max(mat.metalness ?? 0.3, 0.46);
+          if (/wood|walnut|grain/i.test(mat.name) || /wood|desktop|apron|leg|grain|cable_port/i.test(name)) {
+            mat.roughness = Math.max(mat.roughness ?? 0.35, 0.38);
+            mat.metalness = 0;
+            mat.needsUpdate = true;
+            return;
           }
-          if (/desk|floor|white/i.test(mat.name) || /desk|floor/i.test(name)) {
-            mat.color?.set?.(/floor/i.test(name) ? 0xf1f4f1 : 0xd8ddd8);
-            mat.roughness = 0.36;
+          if (/frame|stand|keys|graphite|black/i.test(mat.name) || /frame|stand|key|mouse/i.test(name)) {
+            mat.color?.set?.(/key|mouse/i.test(name) ? 0x0b1012 : 0x070b0c);
+            mat.roughness = Math.min(mat.roughness ?? 0.3, 0.24);
+            mat.metalness = Math.max(mat.metalness ?? 0.3, 0.58);
+          }
+          if (/floor|white/i.test(mat.name) || /floor/i.test(name)) {
+            mat.color?.set?.(0xf6f7f4);
+            mat.roughness = 0.44;
           }
           if (/screen/i.test(mat.name) || /screen_recess/i.test(name)) {
             mat.color?.set?.(0x061014);
@@ -136,8 +142,8 @@ if (canvas && experience) {
         name: "main",
         worldWidth: 4.54,
         worldHeight: 2.42,
-        canvasWidth: 2560,
-        canvasHeight: 1440,
+        canvasWidth: 2048,
+        canvasHeight: 1152,
         position: new THREE.Vector3(0, 2.48, 1.62),
       }),
     );
@@ -146,8 +152,8 @@ if (canvas && experience) {
         name: "vertical",
         worldWidth: 1.07,
         worldHeight: 2.44,
-        canvasWidth: 1080,
-        canvasHeight: 2160,
+        canvasWidth: 720,
+        canvasHeight: 1440,
         position: new THREE.Vector3(-3.22, 2.36, 1.64),
       }),
     );
@@ -156,8 +162,8 @@ if (canvas && experience) {
         name: "laptop",
         worldWidth: 1.84,
         worldHeight: 0.96,
-        canvasWidth: 1600,
-        canvasHeight: 900,
+        canvasWidth: 1280,
+        canvasHeight: 720,
         position: new THREE.Vector3(2.85, 1.78, 1.73),
       }),
     );
@@ -171,6 +177,9 @@ if (canvas && experience) {
     const texture = new THREE.CanvasTexture(textureCanvas);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 16);
+    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
 
     const material = new THREE.MeshBasicMaterial({
       map: texture,
@@ -183,7 +192,7 @@ if (canvas && experience) {
     mesh.renderOrder = 12;
     scene.add(mesh);
 
-    return { name, ctx, canvas: textureCanvas, texture, mesh };
+    return { name, ctx, canvas: textureCanvas, texture, mesh, lastTextureKey: "" };
   }
 
   function createStudioParticles() {
@@ -211,7 +220,14 @@ if (canvas && experience) {
 
   function updateScreenTextures(elapsed, progress) {
     const action = smoothstep(0.52, 0.82, progress);
+    const actionKey = Math.round(action * 72);
+    const motionKey = action > 0.04 && action < 0.96 ? Math.floor(elapsed * 16) : 0;
     surfaces.forEach((surface) => {
+      const textureKey = surface.name === "vertical" ? `${actionKey}` : `${actionKey}:${motionKey}`;
+      if (surface.lastTextureKey === textureKey) {
+        return;
+      }
+      surface.lastTextureKey = textureKey;
       if (surface.name === "main") {
         drawMainHud(surface.ctx, surface.canvas, elapsed, action);
       } else if (surface.name === "vertical") {
@@ -615,7 +631,7 @@ if (canvas && experience) {
     }
     state.width = width;
     state.height = height;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, width < 760 ? 1.2 : 1.45));
     renderer.setSize(width, height, false);
     camera.aspect = width / Math.max(height, 1);
     camera.fov = width < 760 ? 50 : width < 1100 ? 44 : 40;
@@ -631,37 +647,36 @@ if (canvas && experience) {
   function updateCamera(progress) {
     const mobile = state.width < 760;
     const start = mobile
-      ? new THREE.Vector3(0.18, 2.15, 8.1)
-      : new THREE.Vector3(0, 2.32, 8.45);
+      ? new THREE.Vector3(0.12, 2.25, 9.2)
+      : new THREE.Vector3(0, 2.55, 11.2);
     const setup = mobile
-      ? new THREE.Vector3(0.22, 2.12, 6.1)
-      : new THREE.Vector3(0, 2.25, 6.35);
+      ? new THREE.Vector3(0.12, 2.25, 9.2)
+      : new THREE.Vector3(0, 2.55, 11.2);
     const monitor = mobile
-      ? new THREE.Vector3(0.14, 2.38, 4.0)
-      : new THREE.Vector3(0, 2.48, 4.35);
+      ? new THREE.Vector3(0.08, 2.38, 5.25)
+      : new THREE.Vector3(0, 2.42, 6.05);
     const exit = mobile
       ? new THREE.Vector3(0.16, 1.18, 4.15)
       : new THREE.Vector3(0, 1.12, 3.95);
 
     const startLook = mobile
-      ? new THREE.Vector3(0.16, 1.88, 1.55)
-      : new THREE.Vector3(0, 1.92, 1.48);
+      ? new THREE.Vector3(0.08, 1.75, 1.45)
+      : new THREE.Vector3(0, 1.62, 1.35);
     const setupLook = mobile
-      ? new THREE.Vector3(0.12, 2.08, 1.46)
-      : new THREE.Vector3(0, 2.1, 1.45);
-    const monitorLook = new THREE.Vector3(0, 2.48, 1.5);
+      ? new THREE.Vector3(0.08, 1.75, 1.45)
+      : new THREE.Vector3(0, 1.62, 1.35);
+    const monitorLook = new THREE.Vector3(0, 2.34, 1.5);
     const exitLook = mobile
       ? new THREE.Vector3(0.05, 1.0, 1.55)
       : new THREE.Vector3(0, 0.9, 1.5);
 
     let position;
     let lookAt;
-    if (progress < 0.32) {
-      const t = ease(progress / 0.32);
-      position = start.clone().lerp(setup, t);
-      lookAt = startLook.clone().lerp(setupLook, t);
+    if (progress < 0.24) {
+      position = start;
+      lookAt = startLook;
     } else if (progress < 0.5) {
-      const t = ease((progress - 0.32) / 0.18);
+      const t = ease((progress - 0.24) / 0.26);
       position = setup.clone().lerp(monitor, t);
       lookAt = setupLook.clone().lerp(monitorLook, t);
     } else if (progress < 0.82) {

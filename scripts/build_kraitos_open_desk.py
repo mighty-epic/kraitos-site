@@ -88,21 +88,51 @@ def add_monitor(
     frame_mat: bpy.types.Material,
     screen_mat: bpy.types.Material,
     stand_mat: bpy.types.Material,
+    accent_mat: bpy.types.Material | None = None,
     stand_height: float = 1.0,
     vertical: bool = False,
 ) -> None:
     width, height = screen_size
     x, y, z = center
-    add_cube(f"{name}_outer_frame", center, (width + 0.26, 0.18, height + 0.26), frame_mat, bevel=0.07, segments=12)
-    add_cube(f"{name}_screen_recess", (x, y - 0.102, z), (width, 0.04, height), screen_mat, bevel=0.035, segments=10)
-    add_cube(f"{name}_inner_bezel", (x, y - 0.125, z), (width + 0.08, 0.028, height + 0.08), frame_mat, bevel=0.045, segments=10)
+    add_cube(f"{name}_rear_shell", (x, y + 0.02, z), (width + 0.24, 0.16, height + 0.24), frame_mat, bevel=0.035, segments=8)
+    add_cube(f"{name}_screen_recess", (x, y - 0.115, z), (width, 0.032, height), screen_mat, bevel=0.018, segments=6)
+    add_cube(f"{name}_top_bezel", (x, y - 0.15, z + height / 2 + 0.075), (width + 0.2, 0.075, 0.11), frame_mat, bevel=0.025, segments=6)
+    add_cube(f"{name}_bottom_bezel", (x, y - 0.15, z - height / 2 - 0.075), (width + 0.2, 0.075, 0.11), frame_mat, bevel=0.025, segments=6)
+    add_cube(f"{name}_left_bezel", (x - width / 2 - 0.075, y - 0.15, z), (0.11, 0.075, height), frame_mat, bevel=0.025, segments=6)
+    add_cube(f"{name}_right_bezel", (x + width / 2 + 0.075, y - 0.15, z), (0.11, 0.075, height), frame_mat, bevel=0.025, segments=6)
+
+    if accent_mat:
+        add_cube(f"{name}_bottom_status_light", (x, y - 0.195, z - height / 2 - 0.018), (width * 0.34, 0.018, 0.015), accent_mat, bevel=0.004, segments=3)
+        add_cube(f"{name}_camera_dot", (x, y - 0.198, z + height / 2 + 0.076), (0.04, 0.012, 0.018), accent_mat, bevel=0.006, segments=4)
 
     if not vertical:
-        add_cube(f"{name}_stand_neck", (x, y + 0.1, z - height / 2 - stand_height * 0.46), (0.22, 0.22, stand_height), stand_mat, bevel=0.045, segments=10)
-        add_cube(f"{name}_stand_foot", (x, y + 0.02, z - height / 2 - stand_height - 0.03), (1.45, 0.82, 0.09), stand_mat, bevel=0.075, segments=12)
+        add_cube(f"{name}_stand_neck", (x, y + 0.1, z - height / 2 - stand_height * 0.46), (0.18, 0.18, stand_height), stand_mat, bevel=0.028, segments=6)
+        add_cube(f"{name}_stand_foot", (x, y + 0.02, z - height / 2 - stand_height - 0.03), (1.35, 0.72, 0.08), stand_mat, bevel=0.04, segments=8)
     else:
-        add_cube(f"{name}_stand_neck", (x, y + 0.1, z - height / 2 - stand_height * 0.42), (0.18, 0.2, stand_height * 0.82), stand_mat, bevel=0.04, segments=10)
-        add_cube(f"{name}_stand_foot", (x, y + 0.02, z - height / 2 - stand_height * 0.84), (0.92, 0.68, 0.08), stand_mat, bevel=0.065, segments=12)
+        add_cube(f"{name}_stand_neck", (x, y + 0.1, z - height / 2 - stand_height * 0.42), (0.16, 0.18, stand_height * 0.82), stand_mat, bevel=0.025, segments=6)
+        add_cube(f"{name}_stand_foot", (x, y + 0.02, z - height / 2 - stand_height * 0.84), (0.86, 0.62, 0.075), stand_mat, bevel=0.035, segments=8)
+
+
+def add_wood_desk(wood_mat: bpy.types.Material, edge_mat: bpy.types.Material, grain_mat: bpy.types.Material) -> None:
+    add_cube("solid_wood_desktop", (0, -1.58, 0.96), (8.45, 2.55, 0.22), wood_mat, bevel=0.045, segments=8)
+    add_cube("wood_front_apron", (0, -2.9, 0.73), (8.5, 0.16, 0.46), edge_mat, bevel=0.028, segments=6)
+    add_cube("wood_rear_apron", (0, -0.26, 0.74), (8.25, 0.13, 0.34), edge_mat, bevel=0.024, segments=5)
+    add_cube("wood_left_apron", (-4.18, -1.58, 0.74), (0.14, 2.32, 0.36), edge_mat, bevel=0.024, segments=5)
+    add_cube("wood_right_apron", (4.18, -1.58, 0.74), (0.14, 2.32, 0.36), edge_mat, bevel=0.024, segments=5)
+
+    for x in (-3.86, 3.86):
+        for y in (-2.62, -0.54):
+            add_cube(f"wood_leg_{x}_{y}", (x, y, 0.43), (0.36, 0.36, 0.92), edge_mat, bevel=0.035, segments=7)
+
+    for index, y in enumerate([-2.62, -2.34, -2.08, -1.82, -1.55, -1.3, -1.02, -0.74, -0.52]):
+        width = 7.35 + math.sin(index * 1.7) * 0.52
+        x = math.sin(index * 0.93) * 0.18
+        add_cube(f"desktop_long_grain_{index}", (x, y, 1.078), (width, 0.016, 0.006), grain_mat, bevel=0.002, segments=2)
+
+    for index, z in enumerate([0.57, 0.68, 0.79, 0.9]):
+        add_cube(f"front_apron_grain_{index}", (0.08 * math.sin(index), -2.985, z), (7.9, 0.012, 0.012), grain_mat, bevel=0.002, segments=2)
+
+    add_cylinder("desk_cable_port", (3.15, -0.74, 1.087), 0.16, 0.014, grain_mat, vertices=64, rotation=(0, 0, 0))
 
 
 def add_keyboard(mat_key: bpy.types.Material, mat_deck: bpy.types.Material) -> None:
@@ -143,10 +173,12 @@ def create_scene() -> None:
     clear_scene()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
 
-    mat_floor = material("warm white studio floor", (0.88, 0.91, 0.88, 1), roughness=0.36)
-    mat_desk = material("matte white desk slab", (0.83, 0.86, 0.83, 1), metallic=0.05, roughness=0.28)
-    mat_frame = material("deep graphite monitor frame", (0.018, 0.026, 0.028, 1), metallic=0.55, roughness=0.2)
-    mat_frame_edge = material("soft graphite stand metal", (0.035, 0.047, 0.05, 1), metallic=0.65, roughness=0.22)
+    mat_floor = material("infinite white matte floor", (0.94, 0.96, 0.94, 1), roughness=0.42)
+    mat_wood = material("warm walnut desktop", (0.46, 0.255, 0.125, 1), metallic=0.0, roughness=0.34)
+    mat_wood_edge = material("dark walnut desk edge", (0.27, 0.135, 0.062, 1), metallic=0.0, roughness=0.38)
+    mat_wood_grain = material("subtle walnut grain", (0.13, 0.07, 0.032, 1), metallic=0.0, roughness=0.52)
+    mat_frame = material("deep graphite monitor frame", (0.009, 0.012, 0.013, 1), metallic=0.72, roughness=0.16)
+    mat_frame_edge = material("brushed graphite stand metal", (0.018, 0.024, 0.026, 1), metallic=0.72, roughness=0.18)
     mat_screen = material(
         "unlit glass screen base",
         (0.005, 0.018, 0.021, 1),
@@ -165,13 +197,8 @@ def create_scene() -> None:
         emission_strength=1.1,
     )
 
-    add_cube("infinite_white_floor", (0, -0.65, -0.06), (18, 14, 0.1), mat_floor, bevel=0, segments=0)
-    add_cube("open_desk_slab", (0, -1.55, 0.96), (7.65, 2.15, 0.16), mat_desk, bevel=0.12, segments=16)
-    add_cube("desk_front_edge_graphite", (0, -2.62, 0.92), (7.72, 0.08, 0.2), mat_frame, bevel=0.04, segments=8)
-    add_cube("desk_rear_shadow_edge", (0, -0.48, 0.91), (7.55, 0.06, 0.16), mat_frame_edge, bevel=0.035, segments=8)
-
-    for x in (-3.34, 3.34):
-        add_cube(f"desk_leg_{x}", (x, -1.48, 0.42), (0.28, 0.28, 0.86), mat_frame_edge, bevel=0.05, segments=10)
+    add_cube("infinite_white_floor", (0, -0.1, -0.065), (34, 28, 0.1), mat_floor, bevel=0, segments=0)
+    add_wood_desk(mat_wood, mat_wood_edge, mat_wood_grain)
 
     add_monitor(
         "main_monitor",
@@ -180,6 +207,7 @@ def create_scene() -> None:
         frame_mat=mat_frame,
         screen_mat=mat_screen,
         stand_mat=mat_frame_edge,
+        accent_mat=mat_cyan,
         stand_height=0.92,
     )
     add_monitor(
@@ -189,6 +217,7 @@ def create_scene() -> None:
         frame_mat=mat_frame,
         screen_mat=mat_screen,
         stand_mat=mat_frame_edge,
+        accent_mat=mat_cyan,
         stand_height=0.82,
         vertical=True,
     )
@@ -197,8 +226,7 @@ def create_scene() -> None:
     add_keyboard(mat_key, mat_frame_edge)
     add_cylinder("mouse_body", (3.82, -2.34, 1.16), 0.26, 0.11, mat_frame, rotation=(math.radians(90), 0, 0))
 
-    for x in (-2.05, -0.95, 0.15, 1.25):
-        add_cube(f"desk_cyan_trace_{x}", (x, -0.62, 1.07), (0.72, 0.018, 0.014), mat_cyan, bevel=0.01, segments=4)
+    add_cube("monitor_cable_shadow", (0, -0.5, 1.08), (0.92, 0.022, 0.012), mat_wood_grain, bevel=0.003, segments=2)
 
     bpy.ops.object.light_add(type="AREA", location=(0, -3.8, 5.0))
     key = bpy.context.object

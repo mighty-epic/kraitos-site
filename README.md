@@ -32,7 +32,7 @@ Regenerate the active GLB from the repo root with Blender installed:
 & 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --python scripts/build_kraitos_open_desk.py
 ```
 
-The GLB contains the open white studio floor, desk, laptop, vertical monitor, main monitor, keyboard, mouse, stands, bevelled frames, and lighting references. The browser runtime adds sharp high-resolution Kraitos/Jarvis-style interfaces as Three.js canvas textures on the monitors, then animates the on-screen windows and cursor during the fixed-camera action phase.
+The GLB contains the open white studio floor, wooden desk, laptop, vertical monitor, main monitor, keyboard, mouse, stands, bevelled frames, and lighting references. The browser runtime adds sharp high-resolution Kraitos/Jarvis-style interfaces as Three.js canvas textures on the monitors, then animates the on-screen windows and cursor during the fixed-camera action phase. Monitor textures are updated only on scroll/action buckets instead of every render frame to keep Chrome smooth.
 
 ## Windows Installer
 
