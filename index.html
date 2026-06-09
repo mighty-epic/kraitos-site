@@ -21,8 +21,9 @@
     <meta name="theme-color" content="#030708" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23030708'/%3E%3Cpath d='M17 46V18h8v11l13-11h11L33 31l17 15H38L25 34v12z' fill='%2349f6dc'/%3E%3C/svg%3E" />
     <link rel="preload" href="/assets/vendor/three.module.js" as="script" crossorigin />
-    <link rel="stylesheet" href="/kraitos-scene.v2.css" />
-    <script type="module" src="/kraitos-scene.v2.js"></script>
+    <link rel="preload" href="/assets/models/kraitos-command-room.glb" as="fetch" crossorigin />
+    <link rel="stylesheet" href="/kraitos-room.v3.css" />
+    <script type="module" src="/kraitos-room.v3.js"></script>
   </head>
   <body>
     <header class="site-header" aria-label="Primary navigation">
@@ -40,67 +41,18 @@
 
     <main>
       <section class="scroll-experience" aria-labelledby="hero-title">
+        <h1 id="hero-title" class="sr-only">Kraitos desktop AI operator</h1>
         <div class="scene-sticky" aria-hidden="true">
           <canvas class="scene-canvas" data-kraitos-scene></canvas>
+          <div class="scene-loader" data-scene-loader>Loading command room</div>
           <div class="scene-scanline"></div>
           <div class="scene-vignette"></div>
         </div>
 
-        <div class="scene-copy">
-          <section class="scene-panel scene-panel-hero">
-            <div class="panel-copy hero-copy-block">
-              <p class="eyebrow">Formerly EmploAI</p>
-              <h1 id="hero-title">Kraitos</h1>
-              <p class="hero-subtitle">A desktop AI agent that can operate your computer with you in control.</p>
-              <p class="hero-copy">
-                Kraitos connects model reasoning to real machine actions: browser state, desktop input,
-                terminal commands, files, logs, memory, Telegram control, and remote workers.
-              </p>
-              <div class="hero-actions" aria-label="Primary actions">
-                <a
-                  class="button button-primary"
-                  href="https://github.com/mighty-epic/kraitos-site/releases/download/windows-current/Kraitos-Desktop-Setup.msi"
-                >
-                  Download Windows MSI
-                </a>
-                <a class="button button-secondary" href="https://github.com/mighty-epic/emploai">View GitHub</a>
-              </div>
-              <p class="release-note">Current Windows build: 585 MiB MSI, SHA256 verified.</p>
-            </div>
-          </section>
-
-          <section class="scene-panel scene-panel-right">
-            <div class="panel-copy">
-              <p class="section-kicker">Observe</p>
-              <h2>It sees the workstation before it acts.</h2>
-              <p>
-                Browser snapshots, screenshots, OCR, memory, and runtime logs give the operator loop
-                enough state to make decisions without pretending the desktop is a clean sandbox.
-              </p>
-            </div>
-          </section>
-
-          <section class="scene-panel">
-            <div class="panel-copy panel-narrow">
-              <p class="section-kicker">Act</p>
-              <h2>It moves through real tools, not just chat.</h2>
-              <p>
-                Kraitos can route work through browser refs, a Chrome bridge, desktop input, shell
-                commands, file operations, Telegram, and scheduled jobs.
-              </p>
-            </div>
-          </section>
-
-          <section class="scene-panel scene-panel-right">
-            <div class="panel-copy">
-              <p class="section-kicker">Verify</p>
-              <h2>The system leaves a trail you can inspect.</h2>
-              <p>
-                Every meaningful step feeds evidence back into the loop, so the agent can continue,
-                recover, or stop with a readable result instead of silently guessing.
-              </p>
-            </div>
-          </section>
+        <div class="sr-only">
+          Kraitos is a desktop AI agent that can operate your computer with you in control.
+          The 3D scene presents the operator loop as in-room panels: Observe, Act, Verify,
+          and Windows MSI download.
         </div>
       </section>
 
