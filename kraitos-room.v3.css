@@ -1,14 +1,15 @@
 :root {
-  color-scheme: dark;
-  --bg: #030708;
-  --bg-deep: #010304;
-  --panel: rgba(7, 17, 18, 0.72);
-  --panel-solid: #071112;
+  color-scheme: light dark;
+  --bg: #101719;
+  --bg-deep: #0a1012;
+  --hero-bg: #f4f7f4;
+  --panel: rgba(18, 27, 30, 0.78);
+  --panel-solid: #121b1e;
   --ink: #f4fbf9;
-  --muted: #9eb2b0;
-  --muted-strong: #c3d4d0;
+  --muted: #9fb0ad;
+  --muted-strong: #d0dfdc;
   --line: rgba(73, 246, 220, 0.22);
-  --line-soft: rgba(244, 251, 249, 0.12);
+  --line-soft: rgba(244, 251, 249, 0.14);
   --cyan: #49f6dc;
   --amber: #ffb84d;
   --red: #ff5d5d;
@@ -67,7 +68,7 @@ h3 {
   gap: 20px;
   padding: 16px 30px;
   color: var(--ink);
-  background: rgba(3, 7, 8, 0.76);
+  background: rgba(16, 23, 25, 0.86);
   border-bottom: 1px solid var(--line-soft);
   backdrop-filter: blur(18px);
 }
@@ -156,12 +157,9 @@ h3 {
 
 .scroll-experience {
   position: relative;
-  min-height: 420svh;
+  min-height: 500svh;
   overflow: clip;
-  background:
-    linear-gradient(180deg, rgba(3, 7, 8, 0) 0%, var(--bg) 82%),
-    radial-gradient(circle at 50% 28%, rgba(73, 246, 220, 0.11), transparent 42%),
-    var(--bg-deep);
+  background: var(--hero-bg);
 }
 
 .scene-sticky {
@@ -191,27 +189,28 @@ h3 {
 }
 
 .scene-scanline {
-  opacity: 0.2;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  opacity: 0.13;
+  mix-blend-mode: multiply;
+  background-image: linear-gradient(rgba(16, 23, 25, 0.055) 1px, transparent 1px);
   background-size: 100% 4px;
 }
 
 .scene-vignette {
   background:
-    linear-gradient(90deg, rgba(3, 7, 8, 0.44) 0%, rgba(3, 7, 8, 0.04) 48%, rgba(3, 7, 8, 0.46) 100%),
-    linear-gradient(0deg, rgba(3, 7, 8, 0.9) 0%, rgba(3, 7, 8, 0) 22%, rgba(3, 7, 8, 0.66) 100%);
+    linear-gradient(90deg, rgba(244, 247, 244, 0.42) 0%, rgba(244, 247, 244, 0) 24%, rgba(244, 247, 244, 0) 76%, rgba(244, 247, 244, 0.42) 100%),
+    linear-gradient(0deg, rgba(244, 247, 244, 0.92) 0%, rgba(244, 247, 244, 0) 18%, rgba(244, 247, 244, 0.18) 100%);
 }
 
 .scene-loader {
   left: 30px;
   bottom: 28px;
   z-index: 3;
-  color: var(--cyan);
+  color: var(--bg);
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 0.82rem;
   font-weight: 800;
   text-transform: uppercase;
-  opacity: 0.78;
+  opacity: 0.62;
   transition: opacity 300ms ease;
 }
 
@@ -331,7 +330,7 @@ h1 {
   min-height: 255px;
   padding: 24px;
   background:
-    linear-gradient(180deg, rgba(73, 246, 220, 0.08), rgba(73, 246, 220, 0)),
+    linear-gradient(180deg, rgba(73, 246, 220, 0.07), rgba(73, 246, 220, 0)),
     var(--panel-solid);
 }
 
@@ -364,7 +363,7 @@ h1 {
   gap: 48px;
   align-items: center;
   background:
-    linear-gradient(180deg, var(--bg), #061113 100%);
+    linear-gradient(180deg, var(--bg), #0d1517 100%);
 }
 
 .download-panel {
@@ -491,13 +490,13 @@ details p {
   }
 
   .scroll-experience {
-    min-height: 430svh;
+    min-height: 510svh;
   }
 
   .scene-vignette {
     background:
-      linear-gradient(90deg, rgba(3, 7, 8, 0.54) 0%, rgba(3, 7, 8, 0.12) 100%),
-      linear-gradient(0deg, rgba(3, 7, 8, 0.94) 0%, rgba(3, 7, 8, 0) 34%, rgba(3, 7, 8, 0.76) 100%);
+      linear-gradient(90deg, rgba(244, 247, 244, 0.48) 0%, rgba(244, 247, 244, 0.02) 50%, rgba(244, 247, 244, 0.34) 100%),
+      linear-gradient(0deg, rgba(244, 247, 244, 0.94) 0%, rgba(244, 247, 244, 0) 34%, rgba(244, 247, 244, 0.16) 100%);
   }
 
   h1 {
