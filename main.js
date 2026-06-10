@@ -178,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (scrollPercent >= 0.75) {
         activeIndex = boundaries.length - 1; // Last video remains active
         isPastScrubbing = true;
+        document.body.classList.add("light-theme");
       } else {
         for (let i = 0; i < boundaries.length; i++) {
           if (scrollPercent >= boundaries[i].start && scrollPercent <= boundaries[i].end) {
@@ -185,6 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
             break;
           }
         }
+        document.body.classList.remove("light-theme");
       }
 
       // Calculate local percent within that segment

@@ -42,6 +42,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-slow);
 }
 
 a {
@@ -78,6 +79,7 @@ a:hover {
   z-index: -1;
   overflow: hidden;
   background-color: var(--bg-dark);
+  transition: opacity var(--transition-slow);
 }
 
 .video-bg-container video {
@@ -774,4 +776,91 @@ details p {
   .download-panel {
     padding: 20px;
   }
+}
+
+/* Light Theme Transition Styles */
+body.light-theme {
+  background-color: #f5f7fa;
+  color: #1e293b;
+}
+
+body.light-theme .video-bg-container {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Smooth transitions for elements shifting theme color */
+#faq h2, 
+#faq .section-kicker,
+#faq .glass-card,
+#faq summary,
+#faq summary::after,
+#faq details p,
+#setup-help h2,
+#setup-help .section-kicker,
+#setup-help .glass-card,
+#setup-help p,
+.site-footer,
+.site-footer a {
+  transition: color var(--transition-normal), background var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+/* Light theme overrides for bottom FAQ, Setup Instructions, and Footer elements */
+body.light-theme #faq h2,
+body.light-theme #setup-help h2 {
+  color: #0f172a;
+}
+
+body.light-theme #faq .section-kicker,
+body.light-theme #setup-help .section-kicker {
+  color: #0284c7;
+}
+
+body.light-theme #faq .glass-card,
+body.light-theme #setup-help .glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(15, 23, 42, 0.08);
+  color: #334155;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+body.light-theme #faq .glass-card:hover,
+body.light-theme #setup-help .glass-card:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(15, 23, 42, 0.15);
+}
+
+body.light-theme #faq summary {
+  color: #0f172a;
+}
+
+body.light-theme #faq summary::after {
+  color: #64748b;
+}
+
+body.light-theme #faq details[open] summary::after {
+  color: #0284c7;
+}
+
+body.light-theme #faq details p,
+body.light-theme #setup-help p {
+  color: #475569;
+}
+
+body.light-theme .site-footer {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  color: #64748b;
+}
+
+body.light-theme .site-footer a {
+  color: #334155;
+}
+
+body.light-theme .site-footer a:hover {
+  color: #0284c7;
 }
