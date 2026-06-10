@@ -205,5 +205,26 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("scroll", updateSectionFades, { passive: true });
   window.addEventListener("resize", updateSectionFades, { passive: true });
 
+  // Smooth scroll to anchor links with offset for floating header
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener("click", function (e) {
+      const targetId = this.getAttribute("href");
+      if (targetId === "#") return;
+      
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        e.preventDefault();
+        const headerOffset = 80;
+        const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
+    });
+  });
+
   updateSectionFades();
 });
