@@ -163,27 +163,40 @@ document.addEventListener("DOMContentLoaded", () => {
       const scrollPercent = getScrollPercent();
       const numVideos = videos.length;
 
-      // Define custom boundaries for each video segment (first 2 videos scrub fast, last 2 slow)
+      // Define custom boundaries within 0 - 0.75 for each video segment (first 2 fast, last 2 slow)
       const boundaries = [
-        { start: 0.0, end: 0.15 },  // Video 1 (initial_scene_4.mp4)
-        { start: 0.15, end: 0.30 }, // Video 2 (initial_scene_2.mp4)
-        { start: 0.30, end: 0.65 }, // Video 3 (initial_scene_3.mp4)
-        { start: 0.65, end: 1.0 }   // Video 4 (initial_scene_1.mp4)
+        { start: 0.0,    end: 0.1125 }, // Video 1 (initial_scene_4.mp4)
+        { start: 0.1125, end: 0.225 },  // Video 2 (initial_scene_2.mp4)
+        { start: 0.225,  end: 0.4875 }, // Video 3 (initial_scene_3.mp4)
+        { start: 0.4875, end: 0.75 }    // Video 4 (initial_scene_1.mp4)
       ];
 
       // Find the active index based on scrollPercent
       activeIndex = 0;
-      for (let i = 0; i < boundaries.length; i++) {
-        if (scrollPercent >= boundaries[i].start && scrollPercent <= boundaries[i].end) {
-          activeIndex = i;
-          break;
+      let isPastScrubbing = false;
+
+      if (scrollPercent >= 0.75) {
+        activeIndex = boundaries.length - 1; // Last video remains active
+        isPastScrubbing = true;
+      } else {
+        for (let i = 0; i < boundaries.length; i++) {
+          if (scrollPercent >= boundaries[i].start && scrollPercent <= boundaries[i].end) {
+            activeIndex = i;
+            break;
+          }
         }
       }
 
-      const bounds = boundaries[activeIndex];
-      const segmentLength = bounds.end - bounds.start;
-      let localPercent = segmentLength > 0 ? (scrollPercent - bounds.start) / segmentLength : 0;
-      localPercent = Math.max(0, Math.min(1, localPercent));
+      // Calculate local percent within that segment
+      let localPercent = 0;
+      if (isPastScrubbing) {
+        localPercent = 1.0; // Stay at end frame
+      } else {
+        const bounds = boundaries[activeIndex];
+        const segmentLength = bounds.end - bounds.start;
+        localPercent = segmentLength > 0 ? (scrollPercent - bounds.start) / segmentLength : 0;
+        localPercent = Math.max(0, Math.min(1, localPercent));
+      }
 
       // Update active video target time
       const activeVideo = videos[activeIndex];
