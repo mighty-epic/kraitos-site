@@ -32,6 +32,7 @@
       </video>
     </div>
 
+    <!-- Sleek Top Header Bar (Stays Fixed Throughout Site) -->
     <header class="site-header" aria-label="Primary navigation">
       <a class="brand" href="/" aria-label="Kraitos home">
         <span class="brand-mark" aria-hidden="true">K</span>
@@ -39,12 +40,11 @@
       </a>
       <nav class="nav-links" aria-label="Primary">
         <a href="#hero">Home</a>
-        <a href="#download">Download</a>
-        <a href="#system">System</a>
+        <a href="#about">About Us</a>
         <a href="#demo">Demo</a>
         <a href="#faq">FAQ</a>
       </nav>
-      <a class="header-cta" href="#download">Download MSI</a>
+      <a class="header-cta" id="header-waitlist-btn" href="#download">Join Waitlist</a>
     </header>
 
     <main class="scroll-experience">
@@ -71,8 +71,8 @@
         </div>
       </section>
 
-      <!-- Section 2: Download Card -->
-      <section class="panel-section download-panel-section" id="download" aria-label="Downloads">
+      <!-- Section 2: Download Card / Waitlist Gate -->
+      <section class="panel-section download-panel-section" id="download" aria-label="Waitlist and Downloads">
         <div class="container">
           <div class="download-grid-layout">
             <div class="download-info-text">
@@ -83,9 +83,33 @@
               </p>
             </div>
             
-            <div class="download-panel glass-card">
-              <div class="current-build">
-                <span class="badge">LATEST STABLE BUILD</span>
+            <div class="download-panel glass-card" id="waitlist-gate-panel">
+              <!-- STATE 1: Unjoined Waitlist Form -->
+              <div class="waitlist-form-container" id="waitlist-form-container">
+                <span class="badge">BETA REGISTRATION</span>
+                <h3 class="build-title">Join Kraitos Waitlist</h3>
+                <p class="build-info" style="margin-bottom: 24px;">Enter your email to request beta access and unlock the Windows MSI installer download instantly.</p>
+                <form id="waitlist-form" novalidate>
+                  <div class="form-group">
+                    <input
+                      type="email"
+                      id="waitlist-email"
+                      class="form-input"
+                      placeholder="name@company.com"
+                      required
+                      aria-label="Email address"
+                    />
+                    <button type="submit" class="btn btn-primary" id="waitlist-submit-btn">
+                      Join Waitlist
+                    </button>
+                  </div>
+                  <p class="form-error" id="waitlist-error" aria-live="polite"></p>
+                </form>
+              </div>
+
+              <!-- STATE 2: Unlocked Download (Hidden by default) -->
+              <div class="download-unlocked-container" id="download-unlocked-container" style="display: none;">
+                <span class="badge" style="color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.25);">ACCESS UNLOCKED</span>
                 <h3 class="build-title">Windows Installer</h3>
                 <p class="build-info">v0.3.0-beta &middot; 585 MiB &middot; Windows 10/11</p>
                 <a
@@ -107,8 +131,8 @@
                 </div>
               </div>
 
-              <!-- Previous Versions -->
-              <div class="previous-builds">
+              <!-- Previous Versions (Wrapped inside the gate logic) -->
+              <div class="previous-builds" id="previous-builds-container" style="display: none; margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 24px;">
                 <h4>Previous Versions</h4>
                 <ul class="version-list">
                   <li>
@@ -139,12 +163,12 @@
         </div>
       </section>
 
-      <!-- Section 3: Control Layer Capabilities -->
-      <section class="panel-section system-panel-section" id="system" aria-labelledby="system-title">
+      <!-- Section 3: About Us (Renamed from System) -->
+      <section class="panel-section system-panel-section" id="about" aria-labelledby="about-title">
         <div class="container">
           <div class="section-heading-wrapper">
-            <span class="section-kicker">Control Layer</span>
-            <h2 id="system-title">A command deck for live computer work.</h2>
+            <span class="section-kicker">About Us</span>
+            <h2 id="about-title">A command deck for live computer work.</h2>
             <p>
               Kraitos is designed around the practical problem of giving an AI loop controlled access to a real machine while keeping the owner in complete charge.
             </p>
@@ -217,7 +241,7 @@
         </div>
       </section>
 
-      <!-- Section 6: Footer (integrated inside the scroll content) -->
+      <!-- Section 6: Footer -->
       <footer class="site-footer">
         <div class="container">
           <div class="footer-content">

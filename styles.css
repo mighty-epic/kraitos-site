@@ -174,6 +174,16 @@ a:hover {
   transform: translateY(-1px);
 }
 
+.header-cta.joined {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.22);
+  color: #10b981;
+  cursor: default;
+  pointer-events: none;
+  box-shadow: none;
+  transform: none;
+}
+
 /* Glassmorphism Cards */
 .glass-card {
   background: var(--bg-panel);
@@ -332,6 +342,57 @@ a:hover {
   border-radius: 4px;
   letter-spacing: 0.05em;
   margin-bottom: 14px;
+}
+
+/* Waitlist Form Styling */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-input {
+  flex: 1;
+  height: 48px;
+  padding: 0 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px var(--cyan-dim);
+}
+
+.form-error {
+  font-size: 0.78rem;
+  color: #ff5d5d;
+  margin-top: 6px;
+  min-height: 18px;
+  font-weight: 500;
+}
+
+@media (min-width: 520px) {
+  .form-group {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .form-input {
+    width: auto;
+  }
+  
+  #waitlist-submit-btn {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 0 24px;
+  }
 }
 
 .build-title {
