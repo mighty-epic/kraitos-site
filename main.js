@@ -17,6 +17,32 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", adjustSpacerHeight);
   window.addEventListener("load", adjustSpacerHeight);
 
+  // Mobile viewport optimization: remove video sources to save bandwidth/CPU
+  const isMobile = window.innerWidth <= 768;
+  if (isMobile) {
+    const videoBgContainer = document.querySelector(".video-bg-container");
+    if (videoBgContainer) {
+      videoBgContainer.innerHTML = "";
+    }
+  }
+
+  // Scroll theme switcher (applies to all viewports)
+  function updateThemeOnScroll() {
+    const scrollY = window.scrollY || window.pageYOffset;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = maxScroll > 0 ? Math.max(0, Math.min(1, scrollY / maxScroll)) : 0;
+    
+    if (scrollPercent >= 0.60) {
+      document.body.classList.add("light-theme");
+    } else {
+      document.body.classList.remove("light-theme");
+    }
+  }
+
+  window.addEventListener("scroll", updateThemeOnScroll, { passive: true });
+  window.addEventListener("resize", updateThemeOnScroll, { passive: true });
+  updateThemeOnScroll();
+
   // Checksum copy to clipboard
   const checksumVal = document.getElementById("checksum-val");
   const copyFeedback = document.getElementById("copy-feedback");
@@ -199,7 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (scrollPercent >= 0.60) {
         activeIndex = boundaries.length - 1; // Last video remains active
         isPastScrubbing = true;
-        document.body.classList.add("light-theme");
       } else {
         for (let i = 0; i < boundaries.length; i++) {
           if (scrollPercent >= boundaries[i].start && scrollPercent <= boundaries[i].end) {
@@ -207,7 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
             break;
           }
         }
-        document.body.classList.remove("light-theme");
       }
 
       // Calculate local percent within that segment

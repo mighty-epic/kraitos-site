@@ -732,6 +732,10 @@ details p {
 }
 
 @media (max-width: 768px) {
+  .video-bg-container {
+    display: none !important;
+  }
+
   .site-header {
     padding: 0 16px;
   }
