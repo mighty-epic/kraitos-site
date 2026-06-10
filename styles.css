@@ -57,7 +57,7 @@ a:hover {
 /* Helper utilities */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -101,7 +101,7 @@ a:hover {
 .video-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(4, 8, 10, 0.5) 0%, rgba(4, 8, 10, 0.92) 100%);
+  background: radial-gradient(circle at 50% 50%, rgba(4, 8, 10, 0.15) 0%, rgba(4, 8, 10, 0.65) 100%);
   z-index: 1;
   pointer-events: none;
 }
@@ -113,7 +113,7 @@ a:hover {
   top: 18px;
   left: 50%;
   transform: translateX(-50%);
-  width: min(840px, 92%);
+  width: min(720px, 92%);
   height: 52px;
   background: rgba(10, 15, 18, 0.65);
   border: 1px solid var(--border-color);
@@ -224,7 +224,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.15;
+  opacity: 0;
   transform: translateY(30px);
   transition: opacity var(--transition-slow), transform var(--transition-slow);
 }
@@ -314,10 +314,10 @@ a:hover {
 
 /* Download Section Layout */
 .download-grid-layout {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 56px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: stretch;
 }
 
 .download-info-text h2 {
@@ -721,8 +721,7 @@ details p {
 /* Responsive Media Queries */
 @media (max-width: 992px) {
   .download-grid-layout {
-    grid-template-columns: 1fr;
-    gap: 48px;
+    gap: 32px;
   }
   
   .hero-content h1 {
