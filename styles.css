@@ -103,26 +103,30 @@ a:hover {
 .site-header {
   position: fixed;
   z-index: 100;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--header-height);
-  background: rgba(4, 8, 10, 0.75);
-  border-bottom: 1px solid var(--border-color);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(840px, 92%);
+  height: 52px;
+  background: rgba(10, 15, 18, 0.65);
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 8px 0 18px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all var(--transition-normal);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   letter-spacing: -0.02em;
 }
 
@@ -130,20 +134,21 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   background: var(--cyan);
   color: var(--bg-dark);
   font-weight: 900;
-  border-radius: 6px;
-  box-shadow: 0 0 16px rgba(73, 246, 220, 0.3);
+  border-radius: 9999px;
+  box-shadow: 0 0 14px rgba(73, 246, 220, 0.25);
+  font-size: 0.95rem;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 28px;
-  font-size: 0.9rem;
+  gap: 24px;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-muted);
 }
@@ -156,21 +161,21 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 38px;
-  padding: 0 16px;
-  font-size: 0.85rem;
+  height: 36px;
+  padding: 0 18px;
+  font-size: 0.8rem;
   font-weight: 600;
   background: var(--cyan-dim);
   border: 1px solid var(--cyan-border);
   color: var(--cyan);
-  border-radius: 6px;
+  border-radius: 9999px;
   transition: all var(--transition-fast);
 }
 
 .header-cta:hover {
   background: var(--cyan);
   color: var(--bg-dark);
-  box-shadow: 0 0 14px rgba(73, 246, 220, 0.25);
+  box-shadow: 0 0 12px rgba(73, 246, 220, 0.25);
   transform: translateY(-1px);
 }
 
