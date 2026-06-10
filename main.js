@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const boundaries = [
         { start: 0.0,  end: 0.09 }, // Video 1 (initial_scene_4.mp4)
         { start: 0.09, end: 0.18 }, // Video 2 (initial_scene_2.mp4)
-        { start: 0.18, end: 0.39 }, // Video 3 (initial_scene_3.mp4)
+        { start: 0.18, end: 0.39 }, // Video 3 (voice_agent_youtube.mp4)
         { start: 0.39, end: 0.60 }  // Video 4 (initial_scene_1.mp4)
       ];
 
