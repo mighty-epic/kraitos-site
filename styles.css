@@ -919,7 +919,7 @@ body.light-theme .site-footer a:hover {
   color: #0284c7;
 }
 
-/* On the landing page, hide the content wrapper and header until the light theme triggers */
+/* On the landing page, hide the content wrapper until the light theme triggers */
 .landing-page .content-wrapper {
   opacity: 0;
   pointer-events: none;
@@ -927,17 +927,6 @@ body.light-theme .site-footer a:hover {
 }
 
 .landing-page.light-theme .content-wrapper {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.landing-page .site-header {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition-slow), transform var(--transition-normal);
-}
-
-.landing-page.light-theme .site-header {
   opacity: 1;
   pointer-events: auto;
 }
