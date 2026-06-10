@@ -4,6 +4,8 @@ import { GLTFLoader } from "./assets/vendor/GLTFLoader.js";
 const canvas = document.querySelector("[data-kraitos-scene]");
 const experience = document.querySelector(".scroll-experience");
 const loaderLabel = document.querySelector("[data-scene-loader]");
+const sceneSticky = document.querySelector(".scene-sticky");
+const screenTakeover = document.querySelector("[data-screen-takeover]");
 
 const COLORS = {
   frame: "#101719",
@@ -644,6 +646,30 @@ if (canvas && experience) {
     state.targetProgress = clamp((window.scrollY - start) / distance, 0, 1);
   }
 
+  function updateTakeover(progress) {
+    if (!sceneSticky || !screenTakeover) {
+      return;
+    }
+    const takeover = smoothstep(0.68, 0.84, progress);
+    const action = smoothstep(0.52, 0.94, progress);
+    const scale = 0.985 + takeover * 0.015;
+    const y = (1 - takeover) * 18;
+    const windowY = (1 - action) * 26;
+    const cursorTop = state.width < 760 ? 50 - action * 15 : 56 - action * 20;
+    const cursorLeft = state.width < 760 ? 22 + action * 33 : 34 + action * 28;
+
+    sceneSticky.style.setProperty("--takeover-opacity", takeover.toFixed(3));
+    sceneSticky.style.setProperty("--screen-action", action.toFixed(3));
+    sceneSticky.style.setProperty("--takeover-scale", scale.toFixed(4));
+    sceneSticky.style.setProperty("--takeover-y", `${y.toFixed(2)}px`);
+    sceneSticky.style.setProperty("--screen-window-y", `${windowY.toFixed(2)}px`);
+    sceneSticky.style.setProperty("--cursor-top", `${cursorTop.toFixed(2)}%`);
+    sceneSticky.style.setProperty("--cursor-left", `${cursorLeft.toFixed(2)}%`);
+    sceneSticky.style.setProperty("--scene-scanline-opacity", (0.13 * (1 - takeover)).toFixed(3));
+    sceneSticky.style.setProperty("--scene-vignette-opacity", (1 - takeover).toFixed(3));
+    screenTakeover.classList.toggle("is-active", takeover > 0.02);
+  }
+
   function updateCamera(progress) {
     const mobile = state.width < 760;
     const start = mobile
@@ -655,9 +681,6 @@ if (canvas && experience) {
     const monitor = mobile
       ? new THREE.Vector3(0.08, 2.38, 5.25)
       : new THREE.Vector3(0, 2.42, 6.05);
-    const exit = mobile
-      ? new THREE.Vector3(0.16, 1.18, 4.15)
-      : new THREE.Vector3(0, 1.12, 3.95);
 
     const startLook = mobile
       ? new THREE.Vector3(0.08, 1.75, 1.45)
@@ -666,9 +689,6 @@ if (canvas && experience) {
       ? new THREE.Vector3(0.08, 1.75, 1.45)
       : new THREE.Vector3(0, 1.62, 1.35);
     const monitorLook = new THREE.Vector3(0, 2.34, 1.5);
-    const exitLook = mobile
-      ? new THREE.Vector3(0.05, 1.0, 1.55)
-      : new THREE.Vector3(0, 0.9, 1.5);
 
     let position;
     let lookAt;
@@ -679,13 +699,9 @@ if (canvas && experience) {
       const t = ease((progress - 0.24) / 0.26);
       position = setup.clone().lerp(monitor, t);
       lookAt = setupLook.clone().lerp(monitorLook, t);
-    } else if (progress < 0.82) {
+    } else {
       position = monitor;
       lookAt = monitorLook;
-    } else {
-      const t = ease((progress - 0.82) / 0.18);
-      position = monitor.clone().lerp(exit, t);
-      lookAt = monitorLook.clone().lerp(exitLook, t);
     }
 
     camera.position.copy(position);
@@ -704,6 +720,7 @@ if (canvas && experience) {
     if (state.ready) {
       updateScreenTextures(elapsed, state.progress);
     }
+    updateTakeover(state.progress);
     updateCamera(state.progress);
 
     screenSpill.intensity = 1.7 + Math.sin(elapsed * 2) * 0.15;

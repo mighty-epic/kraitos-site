@@ -3,6 +3,8 @@
   --bg: #101719;
   --bg-deep: #0a1012;
   --hero-bg: #f4f7f4;
+  --screen-bg: #061014;
+  --header-height: 77px;
   --panel: rgba(18, 27, 30, 0.78);
   --panel-solid: #121b1e;
   --ink: #f4fbf9;
@@ -66,6 +68,7 @@ h3 {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  min-height: var(--header-height);
   padding: 16px 30px;
   color: var(--ink);
   background: rgba(16, 23, 25, 0.86);
@@ -168,12 +171,323 @@ h3 {
   top: 0;
   height: 100svh;
   overflow: hidden;
+  --takeover-opacity: 0;
+  --screen-action: 0;
+  --takeover-scale: 0.985;
+  --takeover-y: 18px;
+  --screen-window-y: 26px;
+  --cursor-top: 56%;
+  --cursor-left: 34%;
+  --scene-scanline-opacity: 0.13;
+  --scene-vignette-opacity: 1;
 }
 
 .scene-canvas {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.screen-takeover {
+  position: absolute;
+  z-index: 4;
+  inset: var(--header-height) 0 0;
+  padding: clamp(6px, 0.72vw, 12px);
+  pointer-events: none;
+  opacity: var(--takeover-opacity);
+  transform: translateY(var(--takeover-y)) scale(var(--takeover-scale));
+  transform-origin: 50% 50%;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(73, 246, 220, 0.18), transparent 28%),
+    var(--screen-bg);
+  will-change: opacity, transform;
+}
+
+.takeover-frame,
+.takeover-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.takeover-frame {
+  padding: clamp(8px, 0.82vw, 16px);
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, #070c0d, #1a292b 2.4%, #0c1213 4.5%, #0c1213 95.5%, #1a292b 97.6%, #070c0d),
+    #101719;
+  border: 1px solid rgba(73, 246, 220, 0.34);
+  border-radius: 5px 5px 2px 2px;
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 251, 249, 0.1),
+    inset 0 0 42px rgba(73, 246, 220, 0.18),
+    0 0 42px rgba(73, 246, 220, 0.2);
+}
+
+.takeover-frame::before,
+.takeover-frame::after {
+  position: absolute;
+  z-index: 4;
+  content: "";
+  pointer-events: none;
+}
+
+.takeover-frame::before {
+  inset: 0;
+  border-top: clamp(5px, 0.45vw, 9px) solid rgba(211, 255, 248, 0.18);
+  border-right: clamp(7px, 0.62vw, 12px) solid rgba(3, 7, 8, 0.7);
+  border-bottom: clamp(12px, 1vw, 20px) solid rgba(3, 7, 8, 0.86);
+  border-left: clamp(7px, 0.62vw, 12px) solid rgba(3, 7, 8, 0.7);
+}
+
+.takeover-frame::after {
+  left: 50%;
+  bottom: clamp(6px, 0.5vw, 10px);
+  width: min(420px, 32vw);
+  height: 2px;
+  transform: translateX(-50%);
+  background: rgba(220, 255, 249, 0.76);
+  box-shadow: 0 0 18px rgba(73, 246, 220, 0.74);
+}
+
+.takeover-screen {
+  overflow: hidden;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(244, 251, 249, 0.055), transparent 11%),
+    radial-gradient(circle at 50% 46%, rgba(73, 246, 220, 0.15), transparent 20%),
+    var(--screen-bg);
+  border: 1px solid rgba(73, 246, 220, 0.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 251, 249, 0.07),
+    inset 0 0 90px rgba(73, 246, 220, 0.09);
+}
+
+.takeover-grid,
+.takeover-screen::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.takeover-grid {
+  opacity: 0.62;
+  background-image:
+    linear-gradient(rgba(73, 246, 220, 0.085) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(73, 246, 220, 0.085) 1px, transparent 1px);
+  background-size: clamp(42px, 4vw, 72px) clamp(42px, 4vw, 72px);
+}
+
+.takeover-screen::after {
+  content: "";
+  background:
+    linear-gradient(rgba(244, 251, 249, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(3, 7, 8, 0.62), transparent 15%, transparent 85%, rgba(3, 7, 8, 0.62));
+  background-size: 100% 4px, 100% 100%;
+  mix-blend-mode: screen;
+  opacity: 0.42;
+}
+
+.takeover-toprail {
+  position: absolute;
+  z-index: 2;
+  top: clamp(18px, 2.1vw, 38px);
+  left: clamp(26px, 4vw, 76px);
+  right: clamp(26px, 4vw, 76px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding-bottom: 13px;
+  color: rgba(244, 251, 249, 0.72);
+  border-bottom: 2px solid rgba(73, 246, 220, 0.34);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: clamp(0.62rem, 0.86vw, 0.9rem);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.takeover-toprail span:first-child {
+  color: var(--cyan);
+  font-family: inherit;
+  font-size: clamp(1rem, 1.75vw, 2rem);
+}
+
+.takeover-core {
+  position: absolute;
+  z-index: 2;
+  top: 34%;
+  left: 50%;
+  display: grid;
+  width: clamp(170px, 18vw, 310px);
+  aspect-ratio: 1;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  color: var(--ink);
+  font-size: clamp(0.68rem, 0.94vw, 1rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  background:
+    radial-gradient(circle, rgba(73, 246, 220, 0.88) 0 13%, rgba(73, 246, 220, 0.24) 14% 21%, transparent 22%),
+    repeating-radial-gradient(circle, transparent 0 17px, rgba(73, 246, 220, 0.48) 18px 20px),
+    conic-gradient(from 12deg, transparent 0 11%, rgba(73, 246, 220, 0.9) 12% 14%, transparent 15% 24%, rgba(102, 200, 255, 0.7) 25% 27%, transparent 28% 100%);
+  filter: drop-shadow(0 0 18px rgba(73, 246, 220, 0.42));
+  animation: takeover-core-spin 16s linear infinite;
+}
+
+.takeover-core span {
+  transform: translateY(52%);
+}
+
+.takeover-panel,
+.takeover-window {
+  position: absolute;
+  z-index: 2;
+  min-width: 0;
+  color: rgba(244, 251, 249, 0.86);
+  background: rgba(7, 18, 20, 0.78);
+  border: 1px solid rgba(73, 246, 220, 0.48);
+  box-shadow:
+    inset 0 0 28px rgba(73, 246, 220, 0.06),
+    0 18px 60px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.takeover-panel {
+  width: clamp(240px, 21vw, 390px);
+  padding: clamp(16px, 1.3vw, 24px);
+  border-radius: 8px;
+}
+
+.takeover-panel h2,
+.takeover-window h2 {
+  margin: 0;
+  color: var(--cyan);
+  font-size: clamp(1rem, 1.45vw, 1.72rem);
+  line-height: 1;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.takeover-panel p,
+.takeover-window p {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: clamp(12px, 1vw, 18px);
+  padding-bottom: 8px;
+  color: rgba(244, 251, 249, 0.68);
+  border-bottom: 1px solid rgba(73, 246, 220, 0.18);
+  font-size: clamp(0.72rem, 1vw, 1rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.takeover-panel strong {
+  color: var(--ink);
+}
+
+.panel-observe {
+  top: 17%;
+  left: 8%;
+}
+
+.panel-verify {
+  top: 17%;
+  right: 8%;
+}
+
+.panel-surfaces {
+  top: 60%;
+  left: 8%;
+}
+
+.panel-release {
+  top: 60%;
+  right: 8%;
+}
+
+.takeover-window {
+  width: clamp(250px, 25vw, 470px);
+  padding: clamp(16px, 1.2vw, 22px);
+  border-radius: 8px;
+  opacity: var(--screen-action);
+  transform: translateY(var(--screen-window-y));
+}
+
+.takeover-window p {
+  justify-content: flex-start;
+  border-bottom: 0;
+}
+
+.takeover-window p::after {
+  width: clamp(42px, 5vw, 90px);
+  height: 4px;
+  margin-left: auto;
+  content: "";
+  background: var(--cyan);
+  box-shadow: 0 0 18px rgba(73, 246, 220, 0.54);
+}
+
+.window-browser {
+  top: 25%;
+  left: 46%;
+  transform: translate(-50%, var(--screen-window-y));
+}
+
+.window-input {
+  top: 58%;
+  left: 34%;
+}
+
+.window-terminal {
+  top: 58%;
+  left: 58%;
+}
+
+.takeover-cursor {
+  position: absolute;
+  z-index: 5;
+  top: var(--cursor-top);
+  left: var(--cursor-left);
+  width: clamp(28px, 4vw, 60px);
+  aspect-ratio: 0.72;
+  opacity: var(--screen-action);
+  transform: rotate(-22deg);
+  filter: drop-shadow(0 0 14px rgba(73, 246, 220, 0.48));
+}
+
+.takeover-cursor::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  clip-path: polygon(0 0, 100% 58%, 58% 66%, 78% 100%, 54% 100%, 35% 70%, 8% 91%);
+  background: rgba(244, 251, 249, 0.94);
+  border: 2px solid rgba(7, 17, 18, 0.9);
+}
+
+.takeover-cursor::after {
+  position: absolute;
+  top: -18%;
+  left: -24%;
+  width: 68%;
+  aspect-ratio: 1;
+  content: "";
+  border: 3px solid rgba(73, 246, 220, 0.68);
+  border-radius: 50%;
+}
+
+@keyframes takeover-core-spin {
+  from {
+    rotate: 0deg;
+  }
+
+  to {
+    rotate: 360deg;
+  }
 }
 
 .scene-scanline,
@@ -189,13 +503,16 @@ h3 {
 }
 
 .scene-scanline {
-  opacity: 0.13;
+  z-index: 6;
+  opacity: var(--scene-scanline-opacity);
   mix-blend-mode: multiply;
   background-image: linear-gradient(rgba(16, 23, 25, 0.055) 1px, transparent 1px);
   background-size: 100% 4px;
 }
 
 .scene-vignette {
+  z-index: 5;
+  opacity: var(--scene-vignette-opacity);
   background:
     linear-gradient(90deg, rgba(244, 247, 244, 0.42) 0%, rgba(244, 247, 244, 0) 24%, rgba(244, 247, 244, 0) 76%, rgba(244, 247, 244, 0.42) 100%),
     linear-gradient(0deg, rgba(244, 247, 244, 0.92) 0%, rgba(244, 247, 244, 0) 18%, rgba(244, 247, 244, 0.18) 100%);
@@ -204,7 +521,7 @@ h3 {
 .scene-loader {
   left: 30px;
   bottom: 28px;
-  z-index: 3;
+  z-index: 7;
   color: var(--bg);
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 0.82rem;
@@ -296,6 +613,11 @@ h1 {
   z-index: 4;
   padding: 84px 32px;
   background: var(--bg);
+}
+
+.system-band {
+  background:
+    linear-gradient(180deg, var(--screen-bg) 0%, #081113 28%, var(--bg) 100%);
 }
 
 .section-heading,
@@ -481,6 +803,10 @@ details p {
 }
 
 @media (max-width: 760px) {
+  :root {
+    --header-height: 59px;
+  }
+
   .site-header {
     padding: 12px 18px;
   }
@@ -497,6 +823,77 @@ details p {
     background:
       linear-gradient(90deg, rgba(244, 247, 244, 0.48) 0%, rgba(244, 247, 244, 0.02) 50%, rgba(244, 247, 244, 0.34) 100%),
       linear-gradient(0deg, rgba(244, 247, 244, 0.94) 0%, rgba(244, 247, 244, 0) 34%, rgba(244, 247, 244, 0.16) 100%);
+  }
+
+  .screen-takeover {
+    padding: 5px;
+  }
+
+  .takeover-frame {
+    padding: 7px;
+  }
+
+  .takeover-toprail {
+    top: 18px;
+    left: 18px;
+    right: 18px;
+  }
+
+  .takeover-toprail span:last-child {
+    display: none;
+  }
+
+  .takeover-core {
+    top: 38%;
+    width: min(52vw, 230px);
+  }
+
+  .takeover-panel {
+    width: auto;
+    padding: 14px;
+  }
+
+  .takeover-panel h2,
+  .takeover-window h2 {
+    font-size: 0.95rem;
+  }
+
+  .takeover-panel p,
+  .takeover-window p {
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 0.72rem;
+  }
+
+  .panel-observe {
+    top: 15%;
+    left: 6%;
+    right: 51%;
+  }
+
+  .panel-verify {
+    top: 15%;
+    right: 6%;
+    left: 51%;
+  }
+
+  .panel-surfaces,
+  .panel-release,
+  .window-browser,
+  .window-terminal {
+    display: none;
+  }
+
+  .window-input {
+    top: 58%;
+    right: 8%;
+    left: 8%;
+    width: auto;
+  }
+
+  .takeover-cursor {
+    top: var(--cursor-top);
+    left: var(--cursor-left);
   }
 
   h1 {
