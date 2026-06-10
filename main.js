@@ -1,4 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Showcase spacer height adjustment
+  const showcaseSpacer = document.querySelector(".showcase-spacer");
+  const scrollExperience = document.querySelector(".scroll-experience");
+
+  function adjustSpacerHeight() {
+    if (!showcaseSpacer || !scrollExperience) return;
+    
+    let contentHeight = 0;
+    Array.from(scrollExperience.children).forEach(child => {
+      if (!child.classList.contains("showcase-spacer") && child.tagName !== "SCRIPT") {
+        contentHeight += child.offsetHeight;
+      }
+    });
+
+    const viewportHeight = window.innerHeight;
+    const computedHeight = Math.max(viewportHeight, 1.5 * (contentHeight - viewportHeight));
+    showcaseSpacer.style.height = `${computedHeight}px`;
+  }
+
+  // Adjust on load and resize
+  adjustSpacerHeight();
+  window.addEventListener("resize", adjustSpacerHeight);
+  window.addEventListener("load", adjustSpacerHeight);
+
   // Checksum copy to clipboard
   const checksumVal = document.getElementById("checksum-val");
   const copyFeedback = document.getElementById("copy-feedback");
@@ -38,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
       headerWaitlistBtn.textContent = "Joined ✓";
       headerWaitlistBtn.classList.add("joined");
       headerWaitlistBtn.removeAttribute("href");
+      adjustSpacerHeight();
     } else {
       // Sleek animated transition
       formContainer.style.transition = "opacity 300ms ease, transform 300ms ease";
@@ -62,6 +87,8 @@ document.addEventListener("DOMContentLoaded", () => {
         headerWaitlistBtn.textContent = "Joined ✓";
         headerWaitlistBtn.classList.add("joined");
         headerWaitlistBtn.removeAttribute("href");
+        
+        adjustSpacerHeight();
       }, 300);
     }
   }
@@ -163,19 +190,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const scrollPercent = getScrollPercent();
       const numVideos = videos.length;
 
-      // Define custom boundaries within 0 - 0.75 for each video segment (first 2 fast, last 2 slow)
+      // Define custom boundaries within 0 - 0.60 for each video segment (first 2 fast, last 2 slow)
       const boundaries = [
-        { start: 0.0,    end: 0.1125 }, // Video 1 (initial_scene_4.mp4)
-        { start: 0.1125, end: 0.225 },  // Video 2 (initial_scene_2.mp4)
-        { start: 0.225,  end: 0.4875 }, // Video 3 (initial_scene_3.mp4)
-        { start: 0.4875, end: 0.75 }    // Video 4 (initial_scene_1.mp4)
+        { start: 0.0,  end: 0.09 }, // Video 1 (initial_scene_4.mp4)
+        { start: 0.09, end: 0.18 }, // Video 2 (initial_scene_2.mp4)
+        { start: 0.18, end: 0.39 }, // Video 3 (initial_scene_3.mp4)
+        { start: 0.39, end: 0.60 }  // Video 4 (initial_scene_1.mp4)
       ];
 
       // Find the active index based on scrollPercent
       activeIndex = 0;
       let isPastScrubbing = false;
 
-      if (scrollPercent >= 0.75) {
+      if (scrollPercent >= 0.60) {
         activeIndex = boundaries.length - 1; // Last video remains active
         isPastScrubbing = true;
         document.body.classList.add("light-theme");
