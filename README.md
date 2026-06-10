@@ -13,7 +13,7 @@ Static landing page for `https://kraitos.app`, ready for Netlify.
 - `index.html` - landing page markup and metadata
 - `kraitos-room.v3.css` - active responsive site styling
 - `kraitos-room.v3.js` - active scroll-reactive Three.js workstation runtime
-- `assets/models/kraitos-open-desk.v4.glb` - Blender-generated open white desk scene
+- `assets/models/kraitos-open-desk.v5.glb` - Blender-generated open white desk scene
 - `assets/kraitos_launch_short.mp4` - launch short
 - `assets/kraitos_launch_short_poster.jpg` - poster and social preview image
 - `assets/vendor/three.module.js` - vendored Three.js runtime
@@ -32,7 +32,7 @@ Regenerate the active GLB from the repo root with Blender installed:
 & 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --python scripts/build_kraitos_open_desk.py
 ```
 
-The GLB contains the open white studio floor, wooden desk, laptop, vertical monitor, main monitor, keyboard, mouse, stands, bevelled frames, and lighting references. The browser runtime adds sharp high-resolution Kraitos/Jarvis-style interfaces as Three.js canvas textures on the monitors, then animates the on-screen windows and cursor during the fixed-camera action phase. Monitor textures are updated only on scroll/action buckets instead of every render frame to keep Chrome smooth.
+The GLB contains the open white studio floor, wooden desk, vertical monitor, main monitor, keyboard, mouse, stands, bevelled frames, and lighting references. The browser runtime adds sharp high-resolution Kraitos loading interfaces as Three.js canvas textures on the monitors, then hands the main monitor into a matching fullscreen canvas takeover. Monitor textures are updated on lightweight timing buckets instead of every render frame to keep Chrome smooth.
 
 ## Windows Installer
 

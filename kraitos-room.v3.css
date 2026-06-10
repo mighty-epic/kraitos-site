@@ -172,12 +172,8 @@ h3 {
   height: 100svh;
   overflow: hidden;
   --takeover-opacity: 0;
-  --screen-action: 0;
   --takeover-scale: 1;
   --takeover-y: 0px;
-  --screen-window-y: 26px;
-  --cursor-top: 56%;
-  --cursor-left: 34%;
   --scene-canvas-opacity: 1;
   --scene-scanline-opacity: 0.13;
   --scene-vignette-opacity: 1;
@@ -419,76 +415,6 @@ h3 {
 .panel-release {
   top: 60%;
   right: 8%;
-}
-
-.takeover-window {
-  width: clamp(250px, 25vw, 470px);
-  padding: clamp(16px, 1.2vw, 22px);
-  border-radius: 8px;
-  opacity: var(--screen-action);
-  transform: translateY(var(--screen-window-y));
-}
-
-.takeover-window p {
-  justify-content: flex-start;
-  border-bottom: 0;
-}
-
-.takeover-window p::after {
-  width: clamp(42px, 5vw, 90px);
-  height: 4px;
-  margin-left: auto;
-  content: "";
-  background: var(--cyan);
-  box-shadow: 0 0 18px rgba(73, 246, 220, 0.54);
-}
-
-.window-browser {
-  top: 25%;
-  left: 46%;
-  transform: translate(-50%, var(--screen-window-y));
-}
-
-.window-input {
-  top: 58%;
-  left: 34%;
-}
-
-.window-terminal {
-  top: 58%;
-  left: 58%;
-}
-
-.takeover-cursor {
-  position: absolute;
-  z-index: 5;
-  top: var(--cursor-top);
-  left: var(--cursor-left);
-  width: clamp(28px, 4vw, 60px);
-  aspect-ratio: 0.72;
-  opacity: var(--screen-action);
-  transform: rotate(-22deg);
-  filter: drop-shadow(0 0 14px rgba(73, 246, 220, 0.48));
-}
-
-.takeover-cursor::before {
-  position: absolute;
-  inset: 0;
-  content: "";
-  clip-path: polygon(0 0, 100% 58%, 58% 66%, 78% 100%, 54% 100%, 35% 70%, 8% 91%);
-  background: rgba(244, 251, 249, 0.94);
-  border: 2px solid rgba(7, 17, 18, 0.9);
-}
-
-.takeover-cursor::after {
-  position: absolute;
-  top: -18%;
-  left: -24%;
-  width: 68%;
-  aspect-ratio: 1;
-  content: "";
-  border: 3px solid rgba(73, 246, 220, 0.68);
-  border-radius: 50%;
 }
 
 @keyframes takeover-core-spin {
@@ -889,22 +815,8 @@ details p {
   }
 
   .panel-surfaces,
-  .panel-release,
-  .window-browser,
-  .window-terminal {
+  .panel-release {
     display: none;
-  }
-
-  .window-input {
-    top: 58%;
-    right: 8%;
-    left: 8%;
-    width: auto;
-  }
-
-  .takeover-cursor {
-    top: var(--cursor-top);
-    left: var(--cursor-left);
   }
 
   h1 {

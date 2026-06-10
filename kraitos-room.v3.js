@@ -85,7 +85,7 @@ if (canvas && experience) {
   scene.add(studioDust);
 
   new GLTFLoader().load(
-    "/assets/models/kraitos-open-desk.v4.glb",
+    "/assets/models/kraitos-open-desk.v5.glb",
     (gltf) => {
       model.add(gltf.scene);
       gltf.scene.traverse((object) => {
@@ -101,8 +101,8 @@ if (canvas && experience) {
         object.material = Array.isArray(object.material)
           ? object.material.map((mat) => mat?.clone?.() ?? mat)
           : object.material?.clone?.() ?? object.material;
-        object.castShadow = !/(keyboard_key|laptop_key|screen|floor|grain|camera_dot|status_light|cable_port)/i.test(name);
-        object.receiveShadow = /(floor|desk|wood|frame|stand|keyboard_deck|laptop_base)/i.test(name);
+        object.castShadow = !/(keyboard_key|screen|floor|grain|camera_dot|status_light|cable_port)/i.test(name);
+        object.receiveShadow = /(floor|desk|wood|frame|stand|keyboard_deck)/i.test(name);
         if (!/^main_monitor_(rear_shell|screen_recess|top_bezel|bottom_bezel|left_bezel|right_bezel|inner_top_edge|inner_bottom_edge|inner_left_edge|inner_right_edge|bottom_status_light|camera_dot)$/i.test(name)) {
           focusFadeObjects.push(object);
         }
@@ -171,16 +171,6 @@ if (canvas && experience) {
         position: new THREE.Vector3(-3.22, 2.36, 1.64),
       }),
     );
-    surfaces.push(
-      createScreen({
-        name: "laptop",
-        worldWidth: 1.34,
-        worldHeight: 0.72,
-        canvasWidth: 1280,
-        canvasHeight: 720,
-        position: new THREE.Vector3(3.48, 1.62, 1.84),
-      }),
-    );
   }
 
   function createScreen({ name, worldWidth, worldHeight, canvasWidth, canvasHeight, position }) {
@@ -234,27 +224,25 @@ if (canvas && experience) {
   }
 
   function updateScreenTextures(elapsed, progress) {
-    const action = smoothstep(0.52, 0.82, progress);
-    const actionKey = Math.round(action * 72);
-    const motionKey = action > 0.04 && action < 0.96 ? Math.floor(elapsed * 16) : 0;
+    const loading = smoothstep(0.04, 0.82, progress);
+    const loadingKey = Math.round(loading * 80);
+    const motionKey = Math.floor(elapsed * 12);
     surfaces.forEach((surface) => {
-      const textureKey = surface.name === "vertical" ? `${actionKey}` : `${actionKey}:${motionKey}`;
+      const textureKey = `${loadingKey}:${motionKey}`;
       if (surface.lastTextureKey === textureKey) {
         return;
       }
       surface.lastTextureKey = textureKey;
       if (surface.name === "main") {
-        drawMainHud(surface.ctx, surface.canvas, elapsed, action);
-      } else if (surface.name === "vertical") {
-        drawVerticalHud(surface.ctx, surface.canvas, elapsed, action);
+        drawMainHud(surface.ctx, surface.canvas, elapsed, loading);
       } else {
-        drawLaptopConsole(surface.ctx, surface.canvas, elapsed, action);
+        drawVerticalHud(surface.ctx, surface.canvas, elapsed, loading);
       }
       surface.texture.needsUpdate = true;
     });
   }
 
-  function drawMainHud(ctx, canvasNode, elapsed, action) {
+  function drawMainHud(ctx, canvasNode, elapsed, loading) {
     const { width, height } = canvasNode;
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = COLORS.screen;
@@ -262,38 +250,25 @@ if (canvas && experience) {
     drawGrid(ctx, width, height, 64, "rgba(73, 246, 220, 0.07)");
     drawTopRail(ctx, width, "KRAITOS / DESKTOP OPERATOR");
 
-    drawMetricPanel(ctx, 90, 190, 520, 420, "OBSERVE", [
-      ["Screen capture", "live"],
-      ["OCR confidence", "97.4%"],
-      ["Browser state", "indexed"],
-      ["Memory lane", "ready"],
+    drawMetricPanel(ctx, 100, 215, 500, 360, "SYSTEM", [
+      ["Kernel bridge", "loading"],
+      ["Desktop view", "warming"],
+      ["Memory lane", "indexing"],
+      ["Human gate", "online"],
     ]);
-    drawMetricPanel(ctx, 90, 675, 520, 430, "CONTROL SURFACES", [
-      ["Chrome bridge", "connected"],
-      ["Desktop input", "armed"],
-      ["Terminal", "sandboxed"],
-      ["Files", "scoped"],
-    ]);
-    drawMetricPanel(ctx, width - 610, 190, 520, 420, "VERIFY", [
-      ["Step log", "writing"],
-      ["Screenshots", "attached"],
-      ["Recovery path", "available"],
-      ["Result packet", "clean"],
-    ]);
-    drawMetricPanel(ctx, width - 610, 675, 520, 430, "RELEASE", [
-      ["Kraitos MSI", "ready"],
-      ["Size", "585 MiB"],
-      ["SHA256", "verified"],
-      ["Install target", "Windows"],
+    drawMetricPanel(ctx, width - 600, 215, 500, 360, "READINESS", [
+      ["Browser state", "queued"],
+      ["Terminal rail", "standby"],
+      ["Vision model", "priming"],
+      ["Release", "ready"],
     ]);
 
-    drawCore(ctx, width / 2, height * 0.47, Math.min(width, height) * 0.23, elapsed);
-    drawBottomTelemetry(ctx, width, height, elapsed);
-    drawActionWindows(ctx, width, height, action, elapsed);
-    drawCursor(ctx, width, height, action, elapsed);
+    drawCore(ctx, width / 2, height * 0.43, Math.min(width, height) * 0.24, elapsed);
+    drawLoadingDock(ctx, width, height, loading, elapsed);
+    drawPassiveTelemetry(ctx, width, height, elapsed);
   }
 
-  function drawVerticalHud(ctx, canvasNode, elapsed, action) {
+  function drawVerticalHud(ctx, canvasNode, elapsed, loading) {
     const { width, height } = canvasNode;
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = COLORS.screen;
@@ -306,26 +281,23 @@ if (canvas && experience) {
     ctx.font = "650 34px Segoe UI, Arial, sans-serif";
     ctx.fillText("operator timeline", 88, 220);
 
-    const steps = ["observe workstation", "plan action", "move cursor", "open terminal", "write memory", "verify output"];
-    steps.forEach((step, index) => {
-      const y = 350 + index * 210;
-      const active = action * steps.length > index;
-      ctx.strokeStyle = active ? COLORS.cyan : "rgba(220, 244, 240, 0.18)";
-      ctx.fillStyle = active ? COLORS.cyan : "rgba(220, 244, 240, 0.36)";
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(120, y, 28, 0, Math.PI * 2);
+    const rows = ["model runtime", "screen capture", "local memory", "operator controls", "release channel"];
+    rows.forEach((step, index) => {
+      const y = 375 + index * 185;
+      ctx.fillStyle = "rgba(73, 246, 220, 0.1)";
+      roundRect(ctx, 82, y - 54, width - 164, 92, 12);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(73, 246, 220, 0.34)";
+      ctx.lineWidth = 3;
       ctx.stroke();
-      if (index < steps.length - 1) {
-        ctx.beginPath();
-        ctx.moveTo(120, y + 42);
-        ctx.lineTo(120, y + 160);
-        ctx.stroke();
-      }
-      ctx.font = "800 40px Segoe UI, Arial, sans-serif";
-      ctx.fillText(String(index + 1).padStart(2, "0"), 185, y + 13);
-      ctx.font = "650 34px Segoe UI, Arial, sans-serif";
-      ctx.fillText(step, 185, y + 66);
+      ctx.fillStyle = COLORS.cyan;
+      ctx.font = "800 36px Segoe UI, Arial, sans-serif";
+      ctx.fillText(String(index + 1).padStart(2, "0"), 112, y + 10);
+      ctx.fillStyle = COLORS.muted;
+      ctx.font = "650 32px Segoe UI, Arial, sans-serif";
+      ctx.fillText(step, 200, y + 10);
+      ctx.fillStyle = index === 4 ? COLORS.amber : COLORS.cyan;
+      ctx.fillRect(200, y + 34, (width - 290) * clamp(loading - index * 0.08, 0.12, 0.98), 8);
     });
 
     const pulse = 0.5 + Math.sin(elapsed * 3) * 0.5;
@@ -334,41 +306,6 @@ if (canvas && experience) {
     for (let i = 0; i < 5; i += 1) {
       ctx.strokeRect(85 + i * 18, height - 240 + i * 22, width - 170 - i * 36, 118 - i * 12);
     }
-  }
-
-  function drawLaptopConsole(ctx, canvasNode, elapsed, action) {
-    const { width, height } = canvasNode;
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = "#071114";
-    ctx.fillRect(0, 0, width, height);
-    drawGrid(ctx, width, height, 42, "rgba(73, 246, 220, 0.06)");
-    ctx.fillStyle = COLORS.cyan;
-    ctx.font = "900 62px Segoe UI, Arial, sans-serif";
-    ctx.fillText("OPERATOR CONSOLE", 72, 116);
-    ctx.fillStyle = COLORS.muted;
-    ctx.font = "650 30px Consolas, monospace";
-    const logs = [
-      "[observe] captured desktop frame",
-      "[memory] loaded task context",
-      "[browser] attached chrome bridge",
-      "[input] cursor path calculated",
-      "[terminal] command staged",
-      "[verify] screenshot checkpoint saved",
-    ];
-    logs.forEach((line, index) => {
-      const visible = action * logs.length + 1.2 > index;
-      ctx.globalAlpha = visible ? 1 : 0.22;
-      ctx.fillText(line, 78, 210 + index * 78);
-    });
-    ctx.globalAlpha = 1;
-    const bar = 0.22 + action * 0.68 + Math.sin(elapsed * 2.5) * 0.015;
-    ctx.strokeStyle = COLORS.cyan;
-    ctx.lineWidth = 5;
-    roundRect(ctx, 76, height - 145, width - 152, 54, 16);
-    ctx.stroke();
-    ctx.fillStyle = "rgba(73, 246, 220, 0.28)";
-    roundRect(ctx, 88, height - 133, (width - 176) * clamp(bar, 0, 1), 30, 10);
-    ctx.fill();
   }
 
   function drawTopRail(ctx, width, title) {
@@ -480,147 +417,63 @@ if (canvas && experience) {
     ctx.restore();
   }
 
-  function drawBottomTelemetry(ctx, width, height, elapsed) {
-    const y = height - 230;
+  function drawLoadingDock(ctx, width, height, loading, elapsed) {
+    const dockWidth = Math.min(width * 0.56, 950);
+    const x = (width - dockWidth) / 2;
+    const y = height * 0.68;
+    const pulse = 0.5 + Math.sin(elapsed * 2.2) * 0.5;
+    ctx.save();
+    ctx.fillStyle = "rgba(4, 14, 17, 0.86)";
+    ctx.strokeStyle = "rgba(73, 246, 220, 0.5)";
+    ctx.lineWidth = 3;
+    roundRect(ctx, x, y, dockWidth, 198, 18);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = COLORS.cyan;
+    ctx.font = "900 42px Segoe UI, Arial, sans-serif";
+    ctx.fillText("LOADING OPERATOR WORKSPACE", x + 48, y + 62);
+    ctx.fillStyle = COLORS.muted;
+    ctx.font = "650 28px Consolas, monospace";
+    ctx.fillText("preparing local desktop context", x + 50, y + 104);
+
+    const barX = x + 48;
+    const barY = y + 134;
+    const barWidth = dockWidth - 96;
+    ctx.strokeStyle = "rgba(73, 246, 220, 0.58)";
+    ctx.lineWidth = 4;
+    roundRect(ctx, barX, barY, barWidth, 28, 10);
+    ctx.stroke();
+    const progress = clamp(0.18 + loading * 0.74 + Math.sin(elapsed * 1.8) * 0.01, 0, 0.96);
+    ctx.fillStyle = `rgba(73, 246, 220, ${0.24 + pulse * 0.12})`;
+    roundRect(ctx, barX + 7, barY + 7, (barWidth - 14) * progress, 14, 6);
+    ctx.fill();
+
+    ctx.fillStyle = COLORS.ink;
+    ctx.font = "800 26px Consolas, monospace";
+    ctx.fillText(`${Math.round(progress * 100).toString().padStart(2, "0")}%`, barX + barWidth - 72, y + 104);
+    ctx.restore();
+  }
+
+  function drawPassiveTelemetry(ctx, width, height, elapsed) {
+    const y = height - 150;
     ctx.save();
     ctx.strokeStyle = "rgba(73, 246, 220, 0.22)";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(80, y);
-    for (let i = 0; i < 70; i += 1) {
-      const x = 80 + i * ((width - 160) / 69);
-      const wave = Math.sin(i * 0.43 + elapsed * 2.1) * 28 + Math.sin(i * 0.12) * 18;
+    ctx.moveTo(96, y);
+    for (let i = 0; i < 66; i += 1) {
+      const x = 96 + i * ((width - 192) / 65);
+      const wave = Math.sin(i * 0.42 + elapsed * 1.2) * 18 + Math.sin(i * 0.13) * 12;
       ctx.lineTo(x, y + wave);
     }
     ctx.stroke();
-    ctx.fillStyle = "rgba(73, 246, 220, 0.12)";
-    for (let i = 0; i < 28; i += 1) {
-      const barHeight = 18 + Math.abs(Math.sin(i * 0.73 + elapsed)) * 96;
-      ctx.fillRect(90 + i * 42, height - 96 - barHeight, 18, barHeight);
+    ctx.fillStyle = "rgba(73, 246, 220, 0.1)";
+    for (let i = 0; i < 30; i += 1) {
+      const barHeight = 18 + Math.abs(Math.sin(i * 0.73 + elapsed * 0.7)) * 62;
+      ctx.fillRect(120 + i * 44, height - 76 - barHeight, 18, barHeight);
     }
     ctx.restore();
-  }
-
-  function drawActionWindows(ctx, width, height, action, elapsed) {
-    const windows = [
-      {
-        title: "Browser Snapshot",
-        x: 670,
-        y: 170,
-        w: 640,
-        h: 310,
-        start: 0.06,
-        lines: ["DOM state captured", "session refs stable", "vision fallback ready"],
-      },
-      {
-        title: "Desktop Input",
-        x: 420,
-        y: 820,
-        w: 620,
-        h: 280,
-        start: 0.28,
-        lines: ["cursor path resolved", "click target bounded", "human control retained"],
-      },
-      {
-        title: "Terminal Command",
-        x: 1250,
-        y: 790,
-        w: 660,
-        h: 300,
-        start: 0.46,
-        lines: ["cwd verified", "command staged", "stdout checkpoint saved"],
-      },
-      {
-        title: "Verification Packet",
-        x: 1280,
-        y: 260,
-        w: 620,
-        h: 300,
-        start: 0.64,
-        lines: ["screenshot attached", "log hash recorded", "next action approved"],
-      },
-    ];
-
-    windows.forEach((item) => {
-      const open = smoothstep(item.start, item.start + 0.18, action);
-      if (open <= 0.01) {
-        return;
-      }
-      ctx.save();
-      ctx.globalAlpha = open;
-      drawFloatingWindow(ctx, item.x, item.y + (1 - open) * 34, item.w, item.h, item.title, item.lines, elapsed);
-      ctx.restore();
-    });
-  }
-
-  function drawFloatingWindow(ctx, x, y, width, height, title, lines, elapsed) {
-    ctx.fillStyle = "rgba(3, 12, 15, 0.88)";
-    ctx.strokeStyle = "rgba(73, 246, 220, 0.66)";
-    ctx.lineWidth = 3;
-    roundRect(ctx, x, y, width, height, 16);
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillStyle = "rgba(73, 246, 220, 0.16)";
-    ctx.fillRect(x, y, width, 64);
-    ctx.fillStyle = COLORS.cyan;
-    ctx.font = "900 34px Segoe UI, Arial, sans-serif";
-    ctx.fillText(title, x + 30, y + 43);
-    lines.forEach((line, index) => {
-      const rowY = y + 118 + index * 52;
-      ctx.fillStyle = COLORS.ink;
-      ctx.font = "650 28px Segoe UI, Arial, sans-serif";
-      ctx.fillText(line, x + 34, rowY);
-      ctx.fillStyle = index === lines.length - 1 ? COLORS.amber : COLORS.cyan;
-      ctx.fillRect(x + width - 160, rowY - 24, 92 + Math.sin(elapsed * 2 + index) * 18, 8);
-    });
-  }
-
-  function drawCursor(ctx, width, height, action, elapsed) {
-    if (action <= 0.04) {
-      return;
-    }
-
-    const path = [
-      [width * 0.47, height * 0.36],
-      [width * 0.56, height * 0.26],
-      [width * 0.32, height * 0.66],
-      [width * 0.67, height * 0.68],
-      [width * 0.74, height * 0.33],
-    ];
-    const scaled = clamp(action * (path.length - 1), 0, path.length - 1.001);
-    const index = Math.floor(scaled);
-    const local = ease(scaled - index);
-    const current = path[index];
-    const next = path[index + 1] || current;
-    const x = current[0] + (next[0] - current[0]) * local;
-    const y = current[1] + (next[1] - current[1]) * local;
-
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.fillStyle = "rgba(244, 255, 252, 0.95)";
-    ctx.strokeStyle = "rgba(5, 16, 18, 0.95)";
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0, 92);
-    ctx.lineTo(26, 70);
-    ctx.lineTo(43, 112);
-    ctx.lineTo(72, 100);
-    ctx.lineTo(53, 60);
-    ctx.lineTo(91, 58);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    ctx.restore();
-
-    const clickPhase = Math.abs(Math.sin((action * 4.1 + elapsed * 0.035) * Math.PI));
-    if (action > 0.08 && action < 0.95) {
-      ctx.strokeStyle = `rgba(73, 246, 220, ${0.55 * (1 - clickPhase)})`;
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.arc(x + 18, y + 24, 28 + clickPhase * 62, 0, Math.PI * 2);
-      ctx.stroke();
-    }
   }
 
   function roundRect(ctx, x, y, width, height, radius) {
@@ -666,20 +519,12 @@ if (canvas && experience) {
     const screenFocus = smoothstep(0.52, 0.68, progress);
     const takeover = progress >= 0.835 ? 1 : 0;
     const overlayFade = Math.max(screenFocus, takeover);
-    const action = smoothstep(0.52, 0.82, progress);
     const scale = 1;
     const y = 0;
-    const windowY = (1 - action) * 26;
-    const cursorTop = state.width < 760 ? 50 - action * 15 : 56 - action * 20;
-    const cursorLeft = state.width < 760 ? 22 + action * 33 : 34 + action * 28;
 
     sceneSticky.style.setProperty("--takeover-opacity", takeover.toFixed(3));
-    sceneSticky.style.setProperty("--screen-action", action.toFixed(3));
     sceneSticky.style.setProperty("--takeover-scale", scale.toFixed(4));
     sceneSticky.style.setProperty("--takeover-y", `${y.toFixed(2)}px`);
-    sceneSticky.style.setProperty("--screen-window-y", `${windowY.toFixed(2)}px`);
-    sceneSticky.style.setProperty("--cursor-top", `${cursorTop.toFixed(2)}%`);
-    sceneSticky.style.setProperty("--cursor-left", `${cursorLeft.toFixed(2)}%`);
     sceneSticky.style.setProperty("--scene-canvas-opacity", (1 - takeover).toFixed(3));
     sceneSticky.style.setProperty("--scene-scanline-opacity", (0.13 * (1 - overlayFade)).toFixed(3));
     sceneSticky.style.setProperty("--scene-vignette-opacity", (1 - overlayFade).toFixed(3));
@@ -742,7 +587,7 @@ if (canvas && experience) {
       ? new THREE.Vector3(0.08, 2.38, 5.25)
       : new THREE.Vector3(0, 2.42, 6.05);
     const screenFov = mobile ? 42 : 40;
-    const closeViewHeight = mobile ? 3.05 : camera.aspect > 1.72 ? 4.84 / camera.aspect : 2.72;
+    const closeViewHeight = mobile ? 3.14 : 2.96;
     const closeDistance = closeViewHeight / (2 * Math.tan((screenFov * Math.PI) / 360));
     const screenClose = mobile
       ? new THREE.Vector3(0, 2.5, 1.58 + closeDistance)
