@@ -13,7 +13,7 @@ Static landing page for `https://kraitos.app`, ready for Netlify.
 - `index.html` - landing page markup and metadata
 - `kraitos-room.v3.css` - active responsive site styling
 - `kraitos-room.v3.js` - active scroll-reactive Three.js workstation runtime
-- `assets/models/kraitos-open-desk.v3.glb` - Blender-generated open white desk scene
+- `assets/models/kraitos-open-desk.v4.glb` - Blender-generated open white desk scene
 - `assets/kraitos_launch_short.mp4` - launch short
 - `assets/kraitos_launch_short_poster.jpg` - poster and social preview image
 - `assets/vendor/three.module.js` - vendored Three.js runtime

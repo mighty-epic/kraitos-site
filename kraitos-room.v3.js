@@ -85,7 +85,7 @@ if (canvas && experience) {
   scene.add(studioDust);
 
   new GLTFLoader().load(
-    "/assets/models/kraitos-open-desk.v3.glb",
+    "/assets/models/kraitos-open-desk.v4.glb",
     (gltf) => {
       model.add(gltf.scene);
       gltf.scene.traverse((object) => {
@@ -103,7 +103,7 @@ if (canvas && experience) {
           : object.material?.clone?.() ?? object.material;
         object.castShadow = !/(keyboard_key|laptop_key|screen|floor|grain|camera_dot|status_light|cable_port)/i.test(name);
         object.receiveShadow = /(floor|desk|wood|frame|stand|keyboard_deck|laptop_base)/i.test(name);
-        if (!/^main_monitor_(rear_shell|screen_recess|top_bezel|bottom_bezel|left_bezel|right_bezel|bottom_status_light|camera_dot)$/i.test(name)) {
+        if (!/^main_monitor_(rear_shell|screen_recess|top_bezel|bottom_bezel|left_bezel|right_bezel|inner_top_edge|inner_bottom_edge|inner_left_edge|inner_right_edge|bottom_status_light|camera_dot)$/i.test(name)) {
           focusFadeObjects.push(object);
         }
 
@@ -664,11 +664,11 @@ if (canvas && experience) {
       return;
     }
     const screenFocus = smoothstep(0.52, 0.68, progress);
-    const takeover = smoothstep(0.8, 0.84, progress);
+    const takeover = progress >= 0.835 ? 1 : 0;
     const overlayFade = Math.max(screenFocus, takeover);
     const action = smoothstep(0.52, 0.82, progress);
-    const scale = 0.985 + takeover * 0.015;
-    const y = (1 - takeover) * 18;
+    const scale = 1;
+    const y = 0;
     const windowY = (1 - action) * 26;
     const cursorTop = state.width < 760 ? 50 - action * 15 : 56 - action * 20;
     const cursorLeft = state.width < 760 ? 22 + action * 33 : 34 + action * 28;
@@ -687,7 +687,7 @@ if (canvas && experience) {
   }
 
   function updateTakeoverCanvas(elapsed, progress) {
-    if (!takeoverCanvas || !takeoverCtx || progress < 0.62) {
+    if (!takeoverCanvas || !takeoverCtx || progress < 0.48) {
       return;
     }
     if (takeoverCanvas.width !== 2048 || takeoverCanvas.height !== 1152) {

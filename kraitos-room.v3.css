@@ -162,7 +162,7 @@ h3 {
   position: relative;
   min-height: 500svh;
   overflow: clip;
-  background: var(--hero-bg);
+  background: var(--screen-bg);
 }
 
 .scene-sticky {
@@ -173,14 +173,15 @@ h3 {
   overflow: hidden;
   --takeover-opacity: 0;
   --screen-action: 0;
-  --takeover-scale: 0.985;
-  --takeover-y: 18px;
+  --takeover-scale: 1;
+  --takeover-y: 0px;
   --screen-window-y: 26px;
   --cursor-top: 56%;
   --cursor-left: 34%;
   --scene-canvas-opacity: 1;
   --scene-scanline-opacity: 0.13;
   --scene-vignette-opacity: 1;
+  background: var(--screen-bg);
 }
 
 .scene-canvas {
