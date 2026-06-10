@@ -197,6 +197,39 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // Initialize/unlock video decoders on first user interaction (forces metadata load in Chrome/Safari)
+    let initialized = false;
+    function initVideos() {
+      if (initialized) return;
+
+      const playPromises = videos.map(v => {
+        return v.play()
+          .then(() => {
+            v.pause();
+            return true;
+          })
+          .catch(err => {
+            console.warn("Video decoding init deferred/blocked:", err.message);
+            return false;
+          });
+      });
+
+      Promise.all(playPromises).then(results => {
+        if (results.some(r => r === true)) {
+          initialized = true;
+          // Clean up the listeners since we've successfully initialized at least one video
+          window.removeEventListener("touchstart", initVideos);
+          window.removeEventListener("mousedown", initVideos);
+          window.removeEventListener("click", initVideos);
+        }
+        updateVideoTimes();
+      });
+    }
+
+    window.addEventListener("touchstart", initVideos, { passive: true });
+    window.addEventListener("mousedown", initVideos, { passive: true });
+    window.addEventListener("click", initVideos, { passive: true });
+
     window.addEventListener("scroll", updateVideoTimes, { passive: true });
     window.addEventListener("resize", updateVideoTimes, { passive: true });
 
@@ -208,6 +241,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Sync initial frames instantly
         videoStates[idx].currentTime = videoStates[idx].targetTime;
         v.currentTime = videoStates[idx].currentTime;
+      } else {
+        // Force preload of resource
+        v.load();
       }
     });
 
@@ -217,7 +253,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (v.duration) {
           const state = videoStates[idx];
           state.currentTime += (state.targetTime - state.currentTime) * ease;
-          if (Math.abs(state.currentTime - v.currentTime) > 0.015) {
+          // Prevent seek flooding by checking !v.seeking before updating currentTime
+          if (!v.seeking && Math.abs(state.currentTime - v.currentTime) > 0.015) {
             v.currentTime = state.currentTime;
           }
         }
