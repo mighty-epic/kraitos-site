@@ -1,18 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Showcase spacer height adjustment
   const showcaseSpacer = document.querySelector(".showcase-spacer");
-  const scrollExperience = document.querySelector(".scroll-experience");
+  const contentWrapper = document.querySelector(".content-wrapper");
 
   function adjustSpacerHeight() {
-    if (!showcaseSpacer || !scrollExperience) return;
+    if (!showcaseSpacer || !contentWrapper) return;
     
-    let contentHeight = 0;
-    Array.from(scrollExperience.children).forEach(child => {
-      if (!child.classList.contains("showcase-spacer") && child.tagName !== "SCRIPT") {
-        contentHeight += child.offsetHeight;
-      }
-    });
-
+    const contentHeight = contentWrapper.offsetHeight;
     const viewportHeight = window.innerHeight;
     const computedHeight = Math.max(viewportHeight, 1.5 * (contentHeight - viewportHeight));
     showcaseSpacer.style.height = `${computedHeight}px`;
