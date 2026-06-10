@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     unlockDownloads(true);
   }
 
-  // Handle Form Submission
+  // Handle Form Submission (AJAX integration for Netlify Forms)
   if (waitlistForm) {
     waitlistForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -103,12 +103,40 @@ document.addEventListener("DOMContentLoaded", () => {
       // Clear errors
       waitlistError.textContent = "";
       
-      // Save state to LocalStorage
-      localStorage.setItem("kraitos_joined_waitlist", "true");
-      localStorage.setItem("kraitos_waitlist_email", email);
-      
-      // Trigger unlock transition
-      unlockDownloads(false);
+      // Disable button and show loading state
+      const submitBtn = document.getElementById("waitlist-submit-btn");
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.textContent = "Joining...";
+      submitBtn.disabled = true;
+
+      // Pack Form Data
+      const formData = new FormData(waitlistForm);
+
+      // Submit to Netlify
+      fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData).toString()
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Form submission response not OK");
+        }
+        // Save state to LocalStorage
+        localStorage.setItem("kraitos_joined_waitlist", "true");
+        localStorage.setItem("kraitos_waitlist_email", email);
+        
+        // Trigger unlock transition
+        unlockDownloads(false);
+      })
+      .catch((err) => {
+        console.error("Netlify form submission error:", err);
+        waitlistError.textContent = "Something went wrong. Please try again.";
+      })
+      .finally(() => {
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+      });
     });
   }
 

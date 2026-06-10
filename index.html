@@ -89,10 +89,12 @@
                 <span class="badge">BETA REGISTRATION</span>
                 <h3 class="build-title">Join Kraitos Waitlist</h3>
                 <p class="build-info" style="margin-bottom: 24px;">Enter your email to request beta access and unlock the Windows MSI installer download instantly.</p>
-                <form id="waitlist-form" novalidate>
+                <form id="waitlist-form" name="waitlist" data-netlify="true" novalidate>
+                  <input type="hidden" name="form-name" value="waitlist" />
                   <div class="form-group">
                     <input
                       type="email"
+                      name="email"
                       id="waitlist-email"
                       class="form-input"
                       placeholder="name@company.com"
