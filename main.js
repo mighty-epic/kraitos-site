@@ -132,16 +132,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Background Video Scroll Control
-  const video = document.getElementById("bg-scroll-video");
+  // Background Video Scroll Control (Multi-Video Segment Scrubbing)
+  const videos = [
+    document.getElementById("bg-video-1"),
+    document.getElementById("bg-video-2"),
+    document.getElementById("bg-video-3"),
+    document.getElementById("bg-video-4")
+  ].filter(Boolean);
   const sections = document.querySelectorAll(".panel-section");
 
-  if (video) {
-    let targetTime = 0;
-    let currentTime = 0;
+  if (videos.length > 0) {
+    let activeIndex = 0;
+    const videoStates = videos.map(() => ({
+      targetTime: 0,
+      currentTime: 0
+    }));
     const ease = 0.08; // Lerp smoothing factor
 
-    video.pause();
+    // Ensure all videos are paused so scroll manages frame rendering
+    videos.forEach(v => v.pause());
 
     function getScrollPercent() {
       const scrollY = window.scrollY || window.pageYOffset;
@@ -150,34 +159,69 @@ document.addEventListener("DOMContentLoaded", () => {
       return Math.max(0, Math.min(1, scrollY / maxScroll));
     }
 
-    function updateTargetTime() {
-      if (video.duration) {
-        targetTime = getScrollPercent() * video.duration;
+    function updateVideoTimes() {
+      const scrollPercent = getScrollPercent();
+      const numVideos = videos.length;
+
+      const rawIndex = Math.floor(scrollPercent * numVideos);
+      activeIndex = Math.max(0, Math.min(numVideos - 1, rawIndex));
+
+      const segmentStart = activeIndex / numVideos;
+      let localPercent = (scrollPercent - segmentStart) * numVideos;
+      localPercent = Math.max(0, Math.min(1, localPercent));
+
+      // Update active video target time
+      const activeVideo = videos[activeIndex];
+      if (activeVideo && activeVideo.duration) {
+        videoStates[activeIndex].targetTime = localPercent * activeVideo.duration;
       }
-    }
 
-    window.addEventListener("scroll", updateTargetTime, { passive: true });
-    window.addEventListener("resize", updateTargetTime, { passive: true });
-
-    video.addEventListener("loadedmetadata", () => {
-      updateTargetTime();
-      currentTime = targetTime;
-      video.currentTime = currentTime;
-    });
-
-    if (video.readyState >= 1) {
-      updateTargetTime();
-      currentTime = targetTime;
-      video.currentTime = currentTime;
-    }
-
-    function animate() {
-      if (video.duration) {
-        currentTime += (targetTime - currentTime) * ease;
-        if (Math.abs(currentTime - video.currentTime) > 0.015) {
-          video.currentTime = currentTime;
+      // Configure boundary targets for inactive videos
+      for (let i = 0; i < numVideos; i++) {
+        if (i < activeIndex) {
+          if (videos[i].duration) {
+            videoStates[i].targetTime = videos[i].duration;
+          }
+        } else if (i > activeIndex) {
+          videoStates[i].targetTime = 0;
         }
       }
+
+      // Swap active class for opacity transitions
+      videos.forEach((v, idx) => {
+        if (idx === activeIndex) {
+          v.classList.add("active");
+        } else {
+          v.classList.remove("active");
+        }
+      });
+    }
+
+    window.addEventListener("scroll", updateVideoTimes, { passive: true });
+    window.addEventListener("resize", updateVideoTimes, { passive: true });
+
+    // Initialize triggers
+    videos.forEach((v, idx) => {
+      v.addEventListener("loadedmetadata", updateVideoTimes);
+      if (v.readyState >= 1) {
+        updateVideoTimes();
+        // Sync initial frames instantly
+        videoStates[idx].currentTime = videoStates[idx].targetTime;
+        v.currentTime = videoStates[idx].currentTime;
+      }
+    });
+
+    // Unified animation frame seek loop
+    function animate() {
+      videos.forEach((v, idx) => {
+        if (v.duration) {
+          const state = videoStates[idx];
+          state.currentTime += (state.targetTime - state.currentTime) * ease;
+          if (Math.abs(state.currentTime - v.currentTime) > 0.015) {
+            v.currentTime = state.currentTime;
+          }
+        }
+      });
       requestAnimationFrame(animate);
     }
     
