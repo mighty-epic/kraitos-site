@@ -23,38 +23,67 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <!-- Background Video Container -->
+    <div class="video-bg-container" aria-hidden="true">
+      <div class="video-overlay"></div>
+      <video id="bg-scroll-video" playsinline muted preload="auto">
+        <source src="/assets/kraitos_launch_short.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
     <header class="site-header" aria-label="Primary navigation">
       <a class="brand" href="/" aria-label="Kraitos home">
         <span class="brand-mark" aria-hidden="true">K</span>
         <span>Kraitos</span>
       </a>
       <nav class="nav-links" aria-label="Primary">
-        <a href="#system">System</a>
+        <a href="#hero">Home</a>
         <a href="#download">Download</a>
+        <a href="#system">System</a>
         <a href="#demo">Demo</a>
         <a href="#faq">FAQ</a>
       </nav>
       <a class="header-cta" href="#download">Download MSI</a>
     </header>
 
-    <main>
-      <!-- Hero Section -->
-      <section class="hero-section" id="download" aria-label="Introduction and Download">
+    <main class="scroll-experience">
+      <!-- Section 1: Hero -->
+      <section class="panel-section hero-panel" id="hero" aria-label="Introduction">
         <div class="container">
-          <div class="hero-grid">
-            <div class="hero-content">
-              <span class="section-kicker">Kraitos Desktop</span>
-              <h1 class="gradient-text">AI desktop operator for real computer work.</h1>
-              <p class="hero-subtitle">
-                Observe, act, verify, and recover across browser, desktop, terminal, and remote surfaces.
-              </p>
-              <p class="hero-copy">
-                Kraitos is a self-hosted AI operator layer built to execute complex, multi-step digital workflows on a real machine while keeping you in absolute control. Audit tool logs, track state changes, and configure guards to keep your workflows secure.
+          <div class="hero-content">
+            <span class="section-kicker">Kraitos Desktop</span>
+            <h1 class="gradient-text">AI desktop operator for real computer work.</h1>
+            <p class="hero-subtitle">
+              Observe, act, verify, and recover across browser, desktop, terminal, and remote surfaces.
+            </p>
+            <p class="hero-copy">
+              Kraitos is a self-hosted AI operator layer built to execute complex, multi-step digital workflows on a real machine while keeping you in absolute control. Audit tool logs, track state changes, and configure guards to keep your workflows secure.
+            </p>
+            <div class="scroll-hint">
+              <span>Scroll to explore timeline</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Download Card -->
+      <section class="panel-section download-panel-section" id="download" aria-label="Downloads">
+        <div class="container">
+          <div class="download-grid-layout">
+            <div class="download-info-text">
+              <span class="section-kicker">Windows Release</span>
+              <h2>Get the installer build.</h2>
+              <p>
+                Download the current Windows package of Kraitos. We support Windows 10 and 11 environments. The build contains local virtualization operators, a secure browser sandbox, and the core command interpreter.
               </p>
             </div>
-
-            <!-- Download Panel -->
-            <div class="download-panel">
+            
+            <div class="download-panel glass-card">
               <div class="current-build">
                 <span class="badge">LATEST STABLE BUILD</span>
                 <h3 class="build-title">Windows Installer</h3>
@@ -110,10 +139,10 @@
         </div>
       </section>
 
-      <!-- System / Capabilities Section -->
-      <section class="system-section" id="system" aria-labelledby="system-title">
+      <!-- Section 3: Control Layer Capabilities -->
+      <section class="panel-section system-panel-section" id="system" aria-labelledby="system-title">
         <div class="container">
-          <div class="section-heading">
+          <div class="section-heading-wrapper">
             <span class="section-kicker">Control Layer</span>
             <h2 id="system-title">A command deck for live computer work.</h2>
             <p>
@@ -121,22 +150,22 @@
             </p>
           </div>
           <div class="capability-grid">
-            <article class="capability">
+            <article class="capability glass-card">
               <span class="capability-num">01</span>
               <h3>Desktop Control</h3>
               <p>Execute keyboard, mouse, screenshot captures, and optical character recognition fallback when structured automation isn't enough.</p>
             </article>
-            <article class="capability">
+            <article class="capability glass-card">
               <span class="capability-num">02</span>
               <h3>Browser Operations</h3>
               <p>Interface with stable browser references, preserve real session bridge paths, and work with verifiable page states.</p>
             </article>
-            <article class="capability">
+            <article class="capability glass-card">
               <span class="capability-num">03</span>
               <h3>Remote Command</h3>
               <p>Keep your workflows reachable beyond your local UI surface using custom remote operators, workers, and messenger hooks.</p>
             </article>
-            <article class="capability">
+            <article class="capability glass-card">
               <span class="capability-num">04</span>
               <h3>Inspectable Memory</h3>
               <p>Keep the operator loop completely auditable instead of opaque with plain-text run files, detailed tool logs, and step history.</p>
@@ -145,68 +174,62 @@
         </div>
       </section>
 
-      <!-- Demo Section -->
-      <section class="demo-section" id="demo" aria-labelledby="demo-title">
+      <!-- Section 4: Video Info Section -->
+      <section class="panel-section info-panel-section" id="demo" aria-labelledby="demo-title">
         <div class="container">
-          <div class="demo-grid">
-            <div>
-              <span class="section-kicker">Launch Video</span>
-              <h2 id="demo-title">See Kraitos in action.</h2>
-              <p class="hero-copy" style="margin-bottom: 0;">
-                Watch the launch short to see Kraitos spin up tools, command the local environment, and operate complex desktop workflows with visible feedback and tool execution.
-              </p>
+          <div class="glass-card info-card">
+            <span class="section-kicker">Interactive Timeline</span>
+            <h2 id="demo-title">You are controlling the timeline.</h2>
+            <p>
+              The background video is the Kraitos launch short. As you scroll, your position determines the current play frame. Scroll up and down to scrub through the operations: observe how the AI agent operates the desktop, commands the terminal, and interacts with the browser in real time.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: FAQ Section -->
+      <section class="panel-section faq-panel-section" id="faq" aria-labelledby="faq-title">
+        <div class="container">
+          <div class="faq-layout-wrapper">
+            <div class="section-heading">
+              <span class="section-kicker">Frequently Asked Questions</span>
+              <h2 id="faq-title">What Kraitos is, plainly.</h2>
             </div>
-            <div class="video-frame">
-              <video controls playsinline preload="metadata" poster="/assets/kraitos_launch_short_poster.jpg">
-                <source src="/assets/kraitos_launch_short.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+            <div class="faq-grid">
+              <details class="glass-card" open>
+                <summary>Is Kraitos a chatbot?</summary>
+                <p>No. Kraitos is an operator layer for real computer tasks across desktop, browser, terminal, and remote surfaces, working in a loop to execute instructions directly on the system.</p>
+              </details>
+              <details class="glass-card">
+                <summary>Can it control my computer?</summary>
+                <p>Yes. That is the core direction: controlled tool access, visible state updates, and user-owned execution, meaning the AI works inside your local environment under your guardrails.</p>
+              </details>
+              <details class="glass-card">
+                <summary>Why does the installer still say EmploAI?</summary>
+                <p>The project is migrating to the name Kraitos, while the active desktop builds and installers are still running on the stable underlying EmploAI core repository codebase.</p>
+              </details>
+              <details class="glass-card">
+                <summary>Where should backend traffic go?</summary>
+                <p>All app and server-side traffic should route to the API host, using this public domain purely to fetch download binaries and read public documentation.</p>
+              </details>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- FAQ Section -->
-      <section class="faq-section" id="faq" aria-labelledby="faq-title">
+      <!-- Section 6: Footer (integrated inside the scroll content) -->
+      <footer class="site-footer">
         <div class="container">
-          <div class="section-heading">
-            <span class="section-kicker">Frequently Asked Questions</span>
-            <h2 id="faq-title">What Kraitos is, plainly.</h2>
-          </div>
-          <div class="faq-grid">
-            <details open>
-              <summary>Is Kraitos a chatbot?</summary>
-              <p>No. Kraitos is an operator layer for real computer tasks across desktop, browser, terminal, and remote surfaces, working in a loop to execute instructions directly on the system.</p>
-            </details>
-            <details>
-              <summary>Can it control my computer?</summary>
-              <p>Yes. That is the core direction: controlled tool access, visible state updates, and user-owned execution, meaning the AI works inside your local environment under your guardrails.</p>
-            </details>
-            <details>
-              <summary>Why does the installer still say EmploAI?</summary>
-              <p>The project is migrating to the name Kraitos, while the active desktop builds and installers are still running on the stable underlying EmploAI core repository codebase.</p>
-            </details>
-            <details>
-              <summary>Where should backend traffic go?</summary>
-              <p>All app and server-side traffic should route to the API host, using this public domain purely to fetch download binaries and read public documentation.</p>
-            </details>
+          <div class="footer-content">
+            <p>&copy; 2026 Kraitos. Kraitos is the new public name for EmploAI.</p>
+            <div class="footer-links">
+              <a href="https://kraitos.app">kraitos.app</a>
+              <a href="https://github.com/mighty-epic/emploai" target="_blank" rel="noopener">GitHub</a>
+            </div>
           </div>
         </div>
-      </section>
+      </footer>
     </main>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-      <div class="container">
-        <div class="footer-content">
-          <p>&copy; 2026 Kraitos. Kraitos is the new public name for EmploAI.</p>
-          <div class="footer-links">
-            <a href="https://kraitos.app">kraitos.app</a>
-            <a href="https://github.com/mighty-epic/emploai" target="_blank" rel="noopener">GitHub</a>
-          </div>
-        </div>
-      </div>
-    </footer>
 
     <script src="/main.js"></script>
   </body>
