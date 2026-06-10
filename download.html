@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kraitos - Download Installer</title>
+    <meta
+      name="description"
+      content="Secure download portal for the Kraitos desktop AI operator."
+    />
+    <link rel="canonical" href="https://kraitos.app/download" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kraitos.app/download" />
+    <meta property="og:title" content="Kraitos - Download Installer" />
+    <meta
+      property="og:description"
+      content="Access your accepted Kraitos Windows desktop build."
+    />
+    <meta property="og:image" content="https://kraitos.app/assets/kraitos_launch_short_poster.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#04080a" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2304080a'/%3E%3Cpath d='M17 46V18h8v11l13-11h11L33 31l17 15H38L25 34v12z' fill='%2349f6dc'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- Background Video Container -->
+    <div class="video-bg-container" aria-hidden="true">
+      <div class="video-overlay"></div>
+      <video id="bg-scroll-video" playsinline muted preload="auto">
+        <source src="/assets/kraitos_launch_short.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <!-- Sleek Top Header Bar (Fixed) -->
+    <header class="site-header" aria-label="Primary navigation">
+      <a class="brand" href="/" aria-label="Kraitos home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kraitos</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="/#hero">Home</a>
+        <a href="/#about">About Us</a>
+        <a href="/#demo">Demo</a>
+        <a href="/#faq">FAQ</a>
+      </nav>
+      <div class="header-cta joined" style="padding: 0 16px;">Secure Access</div>
+    </header>
+
+    <main class="scroll-experience">
+      <!-- Section 1: Main Download Hub -->
+      <section class="panel-section hero-panel active" id="download-hub" aria-label="Download Centre">
+        <div class="container">
+          <div class="download-grid-layout">
+            <div class="download-info-text">
+              <span class="section-kicker">Kraitos Core Builds</span>
+              <h2>Beta access approved.</h2>
+              <p>
+                Your device has been approved for the Kraitos desktop environment. Download the installer bundle below to get started. The setup package registers your secure browser sandbox, configures the terminal control bridges, and initializes the local OCR visual interpreter.
+              </p>
+            </div>
+            
+            <div class="download-panel glass-card">
+              <!-- Active MSI Download -->
+              <div class="current-build">
+                <span class="badge" style="color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.25);">DOWNLOAD READY</span>
+                <h3 class="build-title">Windows Installer</h3>
+                <p class="build-info">v0.3.0-beta &middot; 585 MiB &middot; Windows 10/11</p>
+                <a
+                  class="btn btn-primary"
+                  href="https://github.com/mighty-epic/kraitos-site/releases/download/windows-current/Kraitos-Desktop-Setup.msi"
+                  aria-label="Download Windows Installer MSI"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                  </svg>
+                  Download MSI
+                </a>
+                <div class="checksum-container">
+                  <div class="checksum-title-row">
+                    <span>SHA256 CHECKSUM:</span>
+                    <span id="copy-feedback" class="copy-feedback">Click to copy</span>
+                  </div>
+                  <code id="checksum-val" class="checksum-val" title="Click to copy SHA256 checksum">617F478E17CF466E90C1D3E8CD69F93A29A7F7F0D31CE437424B22618AEBA7E5</code>
+                </div>
+              </div>
+
+              <!-- Previous Builds -->
+              <div class="previous-builds">
+                <h4>Previous Versions</h4>
+                <ul class="version-list">
+                  <li>
+                    <span class="version-tag">v0.2.0-beta</span>
+                    <a class="version-link" href="https://github.com/mighty-epic/emploai/releases/download/v0.2.0-beta/EmploAI.msi">
+                      Download MSI
+                    </a>
+                  </li>
+                  <li>
+                    <span class="version-tag">v0.1.5-beta</span>
+                    <a class="version-link" href="https://github.com/mighty-epic/emploai/releases/download/v0.1.5-beta/EmploAI.msi">
+                      Download MSI
+                    </a>
+                  </li>
+                  <li>
+                    <span class="version-tag">v0.1.0-beta</span>
+                    <a class="version-link" href="https://github.com/mighty-epic/emploai/releases/download/v0.1.0-beta/EmploAI.msi">
+                      Download MSI
+                    </a>
+                  </li>
+                </ul>
+                <a class="view-all-releases" href="https://github.com/mighty-epic/emploai/releases" target="_blank" rel="noopener">
+                  View all releases on GitHub &rarr;
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Instructions card -->
+      <section class="panel-section info-panel-section" id="setup-help" aria-labelledby="setup-help-title">
+        <div class="container">
+          <div class="glass-card info-card" style="text-align: left;">
+            <span class="section-kicker">Installation Instructions</span>
+            <h2 id="setup-help-title" style="text-align: left; margin-bottom: 24px;">Deploying Kraitos</h2>
+            <p style="margin-bottom: 16px;">
+              1. **Run the Installer**: Double-click `Kraitos-Desktop-Setup.msi` to launch the wizard.
+            </p>
+            <p style="margin-bottom: 16px;">
+              2. **Security Prompts**: If prompted by Windows SmartScreen, click *More info* and choose *Run anyway*. As the branding name transitions, you may see older package hashes referencing the core EmploAI build signature.
+            </p>
+            <p style="margin-bottom: 0;">
+              3. **Backend Binding**: On launch, provide your local server API credentials to bind the desktop control loops.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-content">
+            <p>&copy; 2026 Kraitos. Kraitos is the new public name for EmploAI.</p>
+            <div class="footer-links">
+              <a href="https://kraitos.app">kraitos.app</a>
+              <a href="https://github.com/mighty-epic/emploai" target="_blank" rel="noopener">GitHub</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <script src="/main.js"></script>
+  </body>
+</html>

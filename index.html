@@ -109,56 +109,13 @@
                 </form>
               </div>
 
-              <!-- STATE 2: Unlocked Download (Hidden by default) -->
-              <div class="download-unlocked-container" id="download-unlocked-container" style="display: none;">
-                <span class="badge" style="color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.25);">ACCESS UNLOCKED</span>
-                <h3 class="build-title">Windows Installer</h3>
-                <p class="build-info">v0.3.0-beta &middot; 585 MiB &middot; Windows 10/11</p>
-                <a
-                  class="btn btn-primary"
-                  href="https://github.com/mighty-epic/kraitos-site/releases/download/windows-current/Kraitos-Desktop-Setup.msi"
-                  aria-label="Download Windows Installer MSI"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                  </svg>
-                  Download MSI
-                </a>
-                <div class="checksum-container">
-                  <div class="checksum-title-row">
-                    <span>SHA256 CHECKSUM:</span>
-                    <span id="copy-feedback" class="copy-feedback">Click to copy</span>
-                  </div>
-                  <code id="checksum-val" class="checksum-val" title="Click to copy SHA256 checksum">617F478E17CF466E90C1D3E8CD69F93A29A7F7F0D31CE437424B22618AEBA7E5</code>
-                </div>
-              </div>
-
-              <!-- Previous Versions (Wrapped inside the gate logic) -->
-              <div class="previous-builds" id="previous-builds-container" style="display: none; margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 24px;">
-                <h4>Previous Versions</h4>
-                <ul class="version-list">
-                  <li>
-                    <span class="version-tag">v0.2.0-beta</span>
-                    <a class="version-link" href="https://github.com/mighty-epic/emploai/releases/download/v0.2.0-beta/EmploAI.msi">
-                      Download MSI
-                    </a>
-                  </li>
-                  <li>
-                    <span class="version-tag">v0.1.5-beta</span>
-                    <a class="version-link" href="https://github.com/mighty-epic/emploai/releases/download/v0.1.5-beta/EmploAI.msi">
-                      Download MSI
-                    </a>
-                  </li>
-                  <li>
-                    <span class="version-tag">v0.1.0-beta</span>
-                    <a class="version-link" href="https://github.com/mighty-epic/emploai/releases/download/v0.1.0-beta/EmploAI.msi">
-                      Download MSI
-                    </a>
-                  </li>
-                </ul>
-                <a class="view-all-releases" href="https://github.com/mighty-epic/emploai/releases" target="_blank" rel="noopener">
-                  View all releases on GitHub &rarr;
-                </a>
+              <!-- STATE 2: Waitlist Success Card (Hidden by default) -->
+              <div class="waitlist-success-container" id="waitlist-success-container" style="display: none;">
+                <span class="badge" style="color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.25);">SUBMISSION RECEIVED</span>
+                <h3 class="build-title">You're on the list!</h3>
+                <p class="build-info" style="line-height: 1.6; margin-bottom: 0;">
+                  Thank you for requesting beta access. Your spot has been reserved. Please wait to receive confirmation and instructions in your email once we review your application.
+                </p>
               </div>
             </div>
           </div>

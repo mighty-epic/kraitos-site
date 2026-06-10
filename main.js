@@ -26,17 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const waitlistEmailInput = document.getElementById("waitlist-email");
   const waitlistError = document.getElementById("waitlist-error");
   const formContainer = document.getElementById("waitlist-form-container");
-  const unlockedContainer = document.getElementById("download-unlocked-container");
-  const previousContainer = document.getElementById("previous-builds-container");
+  const successContainer = document.getElementById("waitlist-success-container");
   const headerWaitlistBtn = document.getElementById("header-waitlist-btn");
 
-  function unlockDownloads(isInstant) {
-    if (!formContainer || !unlockedContainer || !previousContainer || !headerWaitlistBtn) return;
+  function showWaitlistSuccess(isInstant) {
+    if (!formContainer || !successContainer || !headerWaitlistBtn) return;
 
     if (isInstant) {
       formContainer.style.display = "none";
-      unlockedContainer.style.display = "block";
-      previousContainer.style.display = "block";
+      successContainer.style.display = "block";
       headerWaitlistBtn.textContent = "Joined ✓";
       headerWaitlistBtn.classList.add("joined");
       headerWaitlistBtn.removeAttribute("href");
@@ -49,23 +47,17 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         formContainer.style.display = "none";
         
-        unlockedContainer.style.display = "block";
-        unlockedContainer.style.opacity = "0";
-        unlockedContainer.style.transform = "translateY(10px)";
-        
-        previousContainer.style.display = "block";
-        previousContainer.style.opacity = "0";
+        successContainer.style.display = "block";
+        successContainer.style.opacity = "0";
+        successContainer.style.transform = "translateY(10px)";
         
         // Force reflow
-        unlockedContainer.offsetHeight;
-        previousContainer.offsetHeight;
+        successContainer.offsetHeight;
         
-        unlockedContainer.style.transition = "opacity 300ms ease, transform 300ms ease";
-        previousContainer.style.transition = "opacity 300ms ease";
+        successContainer.style.transition = "opacity 300ms ease, transform 300ms ease";
         
-        unlockedContainer.style.opacity = "1";
-        unlockedContainer.style.transform = "translateY(0)";
-        previousContainer.style.opacity = "1";
+        successContainer.style.opacity = "1";
+        successContainer.style.transform = "translateY(0)";
         
         headerWaitlistBtn.textContent = "Joined ✓";
         headerWaitlistBtn.classList.add("joined");
@@ -77,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Check initial state from LocalStorage
   const hasJoined = localStorage.getItem("kraitos_joined_waitlist");
   if (hasJoined === "true") {
-    unlockDownloads(true);
+    showWaitlistSuccess(true);
   }
 
   // Handle Form Submission (AJAX integration for Netlify Forms)
@@ -127,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("kraitos_waitlist_email", email);
         
         // Trigger unlock transition
-        unlockDownloads(false);
+        showWaitlistSuccess(false);
       })
       .catch((err) => {
         console.error("Netlify form submission error:", err);
