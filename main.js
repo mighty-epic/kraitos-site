@@ -358,5 +358,51 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // 3D Watermark Tilt Effect
+  const watermark = document.querySelector(".bg-watermark");
+  if (watermark) {
+    let lastMoveTime = 0;
+    const throttleDelay = 16; // Throttle to ~60fps for performance
+    
+    window.addEventListener("mousemove", (e) => {
+      const now = performance.now();
+      if (now - lastMoveTime < throttleDelay) return;
+      lastMoveTime = now;
+
+      // Only calculate and apply transform if light theme is active
+      if (!document.body.classList.contains("light-theme")) {
+        if (watermark.style.transform) {
+          watermark.style.transform = "";
+        }
+        return;
+      }
+
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+
+      // Normalize coordinates (-1 to 1)
+      const percentX = dx / cx;
+      const percentY = dy / cy;
+
+      // Max rotation angles (degrees)
+      const maxRotateX = 12;
+      const maxRotateY = 12;
+
+      const rotateX = -percentY * maxRotateX;
+      const rotateY = percentX * maxRotateY;
+
+      watermark.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+    });
+
+    // Reset when mouse leaves window
+    document.addEventListener("mouseleave", () => {
+      if (document.body.classList.contains("light-theme")) {
+        watermark.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+      }
+    });
+  }
+
   updateSectionFades();
 });
