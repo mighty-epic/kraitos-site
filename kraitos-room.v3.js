@@ -77,7 +77,7 @@ if (canvas && experience) {
   scene.add(studioDust);
 
   new GLTFLoader().load(
-    "/assets/models/kraitos-open-desk.glb",
+    "/assets/models/kraitos-open-desk.v2.glb",
     (gltf) => {
       model.add(gltf.scene);
       gltf.scene.traverse((object) => {

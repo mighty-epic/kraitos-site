@@ -7,7 +7,7 @@ import bpy
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "assets" / "models" / "kraitos-open-desk.glb"
+OUTPUT = ROOT / "assets" / "models" / "kraitos-open-desk.v2.glb"
 
 
 def clear_scene() -> None:
