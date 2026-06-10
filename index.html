@@ -21,7 +21,7 @@
     <meta name="theme-color" content="#030708" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23030708'/%3E%3Cpath d='M17 46V18h8v11l13-11h11L33 31l17 15H38L25 34v12z' fill='%2349f6dc'/%3E%3C/svg%3E" />
     <link rel="preload" href="/assets/vendor/three.module.js" as="script" crossorigin />
-    <link rel="preload" href="/assets/models/kraitos-open-desk.v2.glb" as="fetch" crossorigin />
+    <link rel="preload" href="/assets/models/kraitos-open-desk.v3.glb" as="fetch" crossorigin />
     <link rel="stylesheet" href="/kraitos-room.v3.css" />
     <script type="module" src="/kraitos-room.v3.js"></script>
   </head>
@@ -47,61 +47,7 @@
           <div class="screen-takeover" data-screen-takeover>
             <div class="takeover-frame">
               <div class="takeover-screen">
-                <div class="takeover-grid"></div>
-                <div class="takeover-toprail">
-                  <span>KRAITOS / DESKTOP OPERATOR</span>
-                  <span>LIVE STATE / HUMAN OWNED / TOOL LOGGED</span>
-                </div>
-                <div class="takeover-core">
-                  <span>KRAITOS</span>
-                </div>
-                <div class="takeover-panel panel-observe">
-                  <h2>OBSERVE</h2>
-                  <p><span>Screen capture</span><strong>live</strong></p>
-                  <p><span>OCR confidence</span><strong>97.4%</strong></p>
-                  <p><span>Browser state</span><strong>indexed</strong></p>
-                  <p><span>Memory lane</span><strong>ready</strong></p>
-                </div>
-                <div class="takeover-panel panel-verify">
-                  <h2>VERIFY</h2>
-                  <p><span>Step log</span><strong>writing</strong></p>
-                  <p><span>Screenshots</span><strong>attached</strong></p>
-                  <p><span>Recovery path</span><strong>available</strong></p>
-                  <p><span>Result packet</span><strong>clean</strong></p>
-                </div>
-                <div class="takeover-panel panel-surfaces">
-                  <h2>CONTROL SURFACES</h2>
-                  <p><span>Chrome bridge</span><strong>connected</strong></p>
-                  <p><span>Desktop input</span><strong>armed</strong></p>
-                  <p><span>Terminal</span><strong>staged</strong></p>
-                  <p><span>Files</span><strong>scoped</strong></p>
-                </div>
-                <div class="takeover-panel panel-release">
-                  <h2>RELEASE</h2>
-                  <p><span>Kraitos MSI</span><strong>ready</strong></p>
-                  <p><span>Size</span><strong>585 MiB</strong></p>
-                  <p><span>SHA256</span><strong>verified</strong></p>
-                  <p><span>Install target</span><strong>Windows</strong></p>
-                </div>
-                <div class="takeover-window window-browser">
-                  <h2>Browser Snapshot</h2>
-                  <p>DOM state captured</p>
-                  <p>session refs stable</p>
-                  <p>vision fallback ready</p>
-                </div>
-                <div class="takeover-window window-input">
-                  <h2>Desktop Input</h2>
-                  <p>cursor path resolved</p>
-                  <p>click target bounded</p>
-                  <p>human control retained</p>
-                </div>
-                <div class="takeover-window window-terminal">
-                  <h2>Terminal Command</h2>
-                  <p>cwd verified</p>
-                  <p>command staged</p>
-                  <p>stdout checkpoint saved</p>
-                </div>
-                <div class="takeover-cursor"></div>
+                <canvas class="takeover-canvas" data-takeover-canvas></canvas>
               </div>
             </div>
           </div>

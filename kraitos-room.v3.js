@@ -6,6 +6,8 @@ const experience = document.querySelector(".scroll-experience");
 const loaderLabel = document.querySelector("[data-scene-loader]");
 const sceneSticky = document.querySelector(".scene-sticky");
 const screenTakeover = document.querySelector("[data-screen-takeover]");
+const takeoverCanvas = document.querySelector("[data-takeover-canvas]");
+const takeoverCtx = takeoverCanvas?.getContext("2d");
 
 const COLORS = {
   frame: "#101719",
@@ -34,7 +36,10 @@ if (canvas && experience) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xf4f7f4);
+  const studioBackground = new THREE.Color(0xf4f7f4);
+  const screenBackground = new THREE.Color(0x061014);
+  const sceneBackground = new THREE.Color();
+  scene.background = studioBackground.clone();
   scene.fog = new THREE.Fog(0xf4f7f4, 9, 18);
 
   const camera = new THREE.PerspectiveCamera(40, 1, 0.04, 80);
@@ -52,6 +57,7 @@ if (canvas && experience) {
   };
 
   const surfaces = [];
+  const focusFadeObjects = [];
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0xdde6e1, 1.45));
 
@@ -79,7 +85,7 @@ if (canvas && experience) {
   scene.add(studioDust);
 
   new GLTFLoader().load(
-    "/assets/models/kraitos-open-desk.v2.glb",
+    "/assets/models/kraitos-open-desk.v3.glb",
     (gltf) => {
       model.add(gltf.scene);
       gltf.scene.traverse((object) => {
@@ -92,8 +98,14 @@ if (canvas && experience) {
         }
         const name = object.name || "";
         object.frustumCulled = false;
+        object.material = Array.isArray(object.material)
+          ? object.material.map((mat) => mat?.clone?.() ?? mat)
+          : object.material?.clone?.() ?? object.material;
         object.castShadow = !/(keyboard_key|laptop_key|screen|floor|grain|camera_dot|status_light|cable_port)/i.test(name);
         object.receiveShadow = /(floor|desk|wood|frame|stand|keyboard_deck|laptop_base)/i.test(name);
+        if (!/^main_monitor_(rear_shell|screen_recess|top_bezel|bottom_bezel|left_bezel|right_bezel|bottom_status_light|camera_dot)$/i.test(name)) {
+          focusFadeObjects.push(object);
+        }
 
         const mats = Array.isArray(object.material) ? object.material : [object.material];
         mats.forEach((mat) => {
@@ -162,11 +174,11 @@ if (canvas && experience) {
     surfaces.push(
       createScreen({
         name: "laptop",
-        worldWidth: 1.84,
-        worldHeight: 0.96,
+        worldWidth: 1.34,
+        worldHeight: 0.72,
         canvasWidth: 1280,
         canvasHeight: 720,
-        position: new THREE.Vector3(2.85, 1.78, 1.73),
+        position: new THREE.Vector3(3.48, 1.62, 1.84),
       }),
     );
   }
@@ -185,7 +197,8 @@ if (canvas && experience) {
 
     const material = new THREE.MeshBasicMaterial({
       map: texture,
-      transparent: false,
+      transparent: true,
+      opacity: 1,
       side: THREE.DoubleSide,
       toneMapped: false,
     });
@@ -650,8 +663,10 @@ if (canvas && experience) {
     if (!sceneSticky || !screenTakeover) {
       return;
     }
-    const takeover = smoothstep(0.68, 0.84, progress);
-    const action = smoothstep(0.52, 0.94, progress);
+    const screenFocus = smoothstep(0.52, 0.68, progress);
+    const takeover = smoothstep(0.8, 0.84, progress);
+    const overlayFade = Math.max(screenFocus, takeover);
+    const action = smoothstep(0.52, 0.82, progress);
     const scale = 0.985 + takeover * 0.015;
     const y = (1 - takeover) * 18;
     const windowY = (1 - action) * 26;
@@ -665,9 +680,54 @@ if (canvas && experience) {
     sceneSticky.style.setProperty("--screen-window-y", `${windowY.toFixed(2)}px`);
     sceneSticky.style.setProperty("--cursor-top", `${cursorTop.toFixed(2)}%`);
     sceneSticky.style.setProperty("--cursor-left", `${cursorLeft.toFixed(2)}%`);
-    sceneSticky.style.setProperty("--scene-scanline-opacity", (0.13 * (1 - takeover)).toFixed(3));
-    sceneSticky.style.setProperty("--scene-vignette-opacity", (1 - takeover).toFixed(3));
+    sceneSticky.style.setProperty("--scene-canvas-opacity", (1 - takeover).toFixed(3));
+    sceneSticky.style.setProperty("--scene-scanline-opacity", (0.13 * (1 - overlayFade)).toFixed(3));
+    sceneSticky.style.setProperty("--scene-vignette-opacity", (1 - overlayFade).toFixed(3));
     screenTakeover.classList.toggle("is-active", takeover > 0.02);
+  }
+
+  function updateTakeoverCanvas(elapsed, progress) {
+    if (!takeoverCanvas || !takeoverCtx || progress < 0.62) {
+      return;
+    }
+    if (takeoverCanvas.width !== 2048 || takeoverCanvas.height !== 1152) {
+      takeoverCanvas.width = 2048;
+      takeoverCanvas.height = 1152;
+    }
+    drawMainHud(takeoverCtx, takeoverCanvas, elapsed, smoothstep(0.52, 0.82, progress));
+  }
+
+  function updateFocusFade(progress) {
+    const focus = smoothstep(0.52, 0.68, progress);
+    const opacity = 1 - focus;
+    sceneBackground.copy(studioBackground).lerp(screenBackground, focus);
+    scene.background = sceneBackground;
+    scene.fog.color.copy(sceneBackground);
+    focusFadeObjects.forEach((object) => {
+      setObjectOpacity(object, opacity);
+      object.visible = opacity > 0.012;
+    });
+    surfaces.forEach((surface) => {
+      if (surface.name === "main") {
+        return;
+      }
+      surface.mesh.material.opacity = opacity;
+      surface.mesh.visible = opacity > 0.012;
+    });
+    studioDust.material.opacity = 0.28 * opacity;
+  }
+
+  function setObjectOpacity(object, opacity) {
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    materials.forEach((mat) => {
+      if (!mat) {
+        return;
+      }
+      mat.transparent = true;
+      mat.opacity = opacity;
+      mat.depthWrite = opacity > 0.98;
+      mat.needsUpdate = true;
+    });
   }
 
   function updateCamera(progress) {
@@ -681,6 +741,12 @@ if (canvas && experience) {
     const monitor = mobile
       ? new THREE.Vector3(0.08, 2.38, 5.25)
       : new THREE.Vector3(0, 2.42, 6.05);
+    const screenFov = mobile ? 42 : 40;
+    const closeViewHeight = mobile ? 3.05 : camera.aspect > 1.72 ? 4.84 / camera.aspect : 2.72;
+    const closeDistance = closeViewHeight / (2 * Math.tan((screenFov * Math.PI) / 360));
+    const screenClose = mobile
+      ? new THREE.Vector3(0, 2.5, 1.58 + closeDistance)
+      : new THREE.Vector3(0, 2.52, 1.58 + closeDistance);
 
     const startLook = mobile
       ? new THREE.Vector3(0.08, 1.75, 1.45)
@@ -689,9 +755,13 @@ if (canvas && experience) {
       ? new THREE.Vector3(0.08, 1.75, 1.45)
       : new THREE.Vector3(0, 1.62, 1.35);
     const monitorLook = new THREE.Vector3(0, 2.34, 1.5);
+    const closeLook = mobile
+      ? new THREE.Vector3(0, 2.5, 1.58)
+      : new THREE.Vector3(0, 2.52, 1.58);
 
     let position;
     let lookAt;
+    let closeT = 0;
     if (progress < 0.24) {
       position = start;
       lookAt = startLook;
@@ -699,11 +769,22 @@ if (canvas && experience) {
       const t = ease((progress - 0.24) / 0.26);
       position = setup.clone().lerp(monitor, t);
       lookAt = setupLook.clone().lerp(monitorLook, t);
+    } else if (progress < 0.7) {
+      closeT = ease((progress - 0.5) / 0.2);
+      position = monitor.clone().lerp(screenClose, closeT);
+      lookAt = monitorLook.clone().lerp(closeLook, closeT);
     } else {
-      position = monitor;
-      lookAt = monitorLook;
+      closeT = 1;
+      position = screenClose;
+      lookAt = closeLook;
     }
 
+    const baseFov = state.width < 760 ? 50 : state.width < 1100 ? 44 : 40;
+    const nextFov = baseFov + (screenFov - baseFov) * smoothstep(0.5, 0.7, progress);
+    if (Math.abs(camera.fov - nextFov) > 0.01) {
+      camera.fov = nextFov;
+      camera.updateProjectionMatrix();
+    }
     camera.position.copy(position);
     camera.lookAt(lookAt);
   }
@@ -720,7 +801,9 @@ if (canvas && experience) {
     if (state.ready) {
       updateScreenTextures(elapsed, state.progress);
     }
+    updateFocusFade(state.progress);
     updateTakeover(state.progress);
+    updateTakeoverCanvas(elapsed, state.progress);
     updateCamera(state.progress);
 
     screenSpill.intensity = 1.7 + Math.sin(elapsed * 2) * 0.15;

@@ -7,7 +7,7 @@ import bpy
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "assets" / "models" / "kraitos-open-desk.v2.glb"
+OUTPUT = ROOT / "assets" / "models" / "kraitos-open-desk.v3.glb"
 
 
 def clear_scene() -> None:
@@ -151,22 +151,23 @@ def add_keyboard(mat_key: bpy.types.Material, mat_deck: bpy.types.Material) -> N
 
 
 def add_laptop(frame_mat: bpy.types.Material, screen_mat: bpy.types.Material, key_mat: bpy.types.Material) -> None:
-    add_cube("laptop_base", (2.85, -2.0, 1.08), (2.18, 1.34, 0.08), frame_mat, bevel=0.06, segments=10)
-    add_cube("laptop_trackpad", (2.85, -2.25, 1.135), (0.66, 0.36, 0.012), screen_mat, bevel=0.025, segments=6)
+    base_x = 3.48
+    add_cube("laptop_base", (base_x, -2.05, 1.08), (1.5, 1.02, 0.07), frame_mat, bevel=0.05, segments=10)
+    add_cube("laptop_trackpad", (base_x, -2.25, 1.13), (0.46, 0.28, 0.012), screen_mat, bevel=0.02, segments=6)
     for row in range(4):
-        for col in range(10):
+        for col in range(8):
             add_cube(
                 f"laptop_key_{row}_{col}",
-                (1.98 + col * 0.19, -2.04 + row * 0.13, 1.145),
-                (0.12, 0.07, 0.018),
+                (base_x - 0.58 + col * 0.165, -2.03 + row * 0.12, 1.14),
+                (0.1, 0.062, 0.016),
                 key_mat,
                 bevel=0.015,
                 segments=4,
             )
-    add_cube("laptop_screen_frame", (2.85, -1.64, 1.78), (2.18, 0.11, 1.22), frame_mat, bevel=0.055, segments=10)
-    add_cube("laptop_screen_recess", (2.85, -1.71, 1.78), (1.94, 0.035, 1.02), screen_mat, bevel=0.028, segments=8)
-    add_cylinder("laptop_hinge_left", (1.88, -1.62, 1.22), 0.045, 0.24, frame_mat, rotation=(math.radians(90), 0, 0))
-    add_cylinder("laptop_hinge_right", (3.82, -1.62, 1.22), 0.045, 0.24, frame_mat, rotation=(math.radians(90), 0, 0))
+    add_cube("laptop_screen_frame", (base_x, -1.78, 1.62), (1.52, 0.095, 0.88), frame_mat, bevel=0.045, segments=10)
+    add_cube("laptop_screen_recess", (base_x, -1.84, 1.62), (1.34, 0.03, 0.72), screen_mat, bevel=0.024, segments=8)
+    add_cylinder("laptop_hinge_left", (base_x - 0.66, -1.74, 1.16), 0.035, 0.2, frame_mat, rotation=(math.radians(90), 0, 0))
+    add_cylinder("laptop_hinge_right", (base_x + 0.66, -1.74, 1.16), 0.035, 0.2, frame_mat, rotation=(math.radians(90), 0, 0))
 
 
 def create_scene() -> None:
@@ -224,7 +225,7 @@ def create_scene() -> None:
 
     add_laptop(mat_frame, mat_screen, mat_key)
     add_keyboard(mat_key, mat_frame_edge)
-    add_cylinder("mouse_body", (3.82, -2.34, 1.16), 0.26, 0.11, mat_frame, rotation=(math.radians(90), 0, 0))
+    add_cylinder("mouse_body", (4.02, -2.38, 1.15), 0.22, 0.1, mat_frame, rotation=(math.radians(90), 0, 0))
 
     add_cube("monitor_cable_shadow", (0, -0.5, 1.08), (0.92, 0.022, 0.012), mat_wood_grain, bevel=0.003, segments=2)
 
