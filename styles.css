@@ -922,11 +922,13 @@ body.light-theme .site-footer a:hover {
 /* On the landing page, hide the content wrapper until the light theme triggers */
 .landing-page .content-wrapper {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity var(--transition-slow);
+  transition: opacity var(--transition-slow), visibility var(--transition-slow);
 }
 
 .landing-page.light-theme .content-wrapper {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
