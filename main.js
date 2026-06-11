@@ -351,14 +351,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Section Fade In/Out on Scroll
   function updateSectionFades() {
     const viewportHeight = window.innerHeight;
-    const viewportCenter = viewportHeight / 2;
 
     sections.forEach((section) => {
       const rect = section.getBoundingClientRect();
-      const sectionCenter = rect.top + rect.height / 2;
-      const distanceFromCenter = Math.abs(sectionCenter - viewportCenter);
+      
+      // Reveal when top enters the viewport (at 85% depth) and hide only when it fully exits the top (at 0 depth)
+      const isVisible = rect.top < viewportHeight * 0.85 && rect.bottom > 0;
 
-      if (distanceFromCenter < viewportHeight * 0.45) {
+      if (isVisible) {
         section.classList.add("active");
       } else {
         section.classList.remove("active");
