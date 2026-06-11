@@ -355,14 +355,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Unified animation frame seek loop
-    function animate() {
+    function animate(timestamp) {
       videos.forEach((v, idx) => {
         if (v.duration) {
           const state = videoStates[idx];
           state.currentTime += (state.targetTime - state.currentTime) * ease;
-          // Prevent seek flooding by checking !v.seeking before updating currentTime
-          if (!v.seeking && Math.abs(state.currentTime - v.currentTime) > 0.015) {
-            v.currentTime = state.currentTime;
+          // Throttled seek updates (every 30ms / ~30fps) to ensure responsive rendering
+          // bypassing the browser's slow and asynchronous 'seeking' state checks
+          if (timestamp - (state.lastSeekTime || 0) > 30) {
+            if (Math.abs(state.currentTime - v.currentTime) > 0.015) {
+              v.currentTime = state.currentTime;
+              state.lastSeekTime = timestamp;
+            }
           }
         }
       });
