@@ -1016,7 +1016,7 @@ body.light-theme .bg-watermark-container {
 /* Inline Mobile Demo Video styles */
 .mobile-only-text,
 .mobile-demo-video-container {
-  display: none;
+  display: none !important;
 }
 
 .mobile-demo-video {
