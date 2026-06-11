@@ -736,6 +736,10 @@ details p {
     display: none !important;
   }
 
+  .showcase-spacer {
+    display: none !important;
+  }
+
   .site-header {
     padding: 0 16px;
   }

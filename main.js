@@ -4,6 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const contentWrapper = document.querySelector(".content-wrapper");
 
   function adjustSpacerHeight() {
+    if (window.innerWidth <= 768) {
+      if (showcaseSpacer) showcaseSpacer.style.height = "0px";
+      return;
+    }
     if (!showcaseSpacer || !contentWrapper) return;
     
     const contentHeight = contentWrapper.offsetHeight;
@@ -28,6 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Scroll theme switcher (applies to all viewports)
   function updateThemeOnScroll() {
+    if (window.innerWidth <= 768) {
+      document.body.classList.add("light-theme");
+      return;
+    }
     const scrollY = window.scrollY || window.pageYOffset;
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     const scrollPercent = maxScroll > 0 ? Math.max(0, Math.min(1, scrollY / maxScroll)) : 0;
