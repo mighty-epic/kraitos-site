@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Force page scroll to top on landing or refreshing
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+  window.scrollTo(0, 0);
+  
   // Showcase spacer height adjustment
   const showcaseSpacer = document.querySelector(".showcase-spacer");
   const contentWrapper = document.querySelector(".content-wrapper");
@@ -20,6 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
   adjustSpacerHeight();
   window.addEventListener("resize", adjustSpacerHeight);
   window.addEventListener("load", adjustSpacerHeight);
+  window.addEventListener("load", () => {
+    window.scrollTo(0, 0);
+  });
 
   // Mobile viewport optimization: remove video sources to save bandwidth/CPU
   const isMobile = window.innerWidth <= 768;
