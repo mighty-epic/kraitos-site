@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
       targetTime: 0,
       currentTime: 0
     }));
-    const ease = 0.08; // Lerp smoothing factor
+    const ease = 0.15; // Lerp smoothing factor
 
     // Ensure all videos are paused so scroll manages frame rendering
     videos.forEach(v => v.pause());
@@ -363,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
           // Throttled seek updates (every 30ms / ~30fps) to ensure responsive rendering
           // bypassing the browser's slow and asynchronous 'seeking' state checks
           if (timestamp - (state.lastSeekTime || 0) > 30) {
-            if (Math.abs(state.currentTime - v.currentTime) > 0.015) {
+            if (Math.abs(state.currentTime - v.currentTime) > 0.002) {
               v.currentTime = state.currentTime;
               state.lastSeekTime = timestamp;
             }
