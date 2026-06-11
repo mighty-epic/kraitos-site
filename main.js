@@ -49,8 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const watermarkContainer = document.querySelector(".bg-watermark-container");
     if (watermarkContainer) {
       let watermarkOpacity = 0;
-      if (scrollPercent <= 0.10) {
-        watermarkOpacity = 1 - (scrollPercent / 0.10);
+      if (scrollPercent <= 0.25) {
+        watermarkOpacity = 1 - (scrollPercent / 0.25);
       } else if (scrollPercent >= 0.60) {
         watermarkOpacity = 1;
       } else {
