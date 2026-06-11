@@ -32,13 +32,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Scroll theme switcher (applies to all viewports)
   function updateThemeOnScroll() {
+    const scrollY = window.scrollY || window.pageYOffset;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = maxScroll > 0 ? Math.max(0, Math.min(1, scrollY / maxScroll)) : 0;
+
+    // Watermark opacity scroll-controller
+    const watermarkContainer = document.querySelector(".bg-watermark-container");
+    if (watermarkContainer) {
+      let watermarkOpacity = 0;
+      if (scrollPercent <= 0.10) {
+        watermarkOpacity = 1 - (scrollPercent / 0.10);
+      } else if (scrollPercent >= 0.60) {
+        watermarkOpacity = 1;
+      } else {
+        watermarkOpacity = 0;
+      }
+      watermarkContainer.style.opacity = watermarkOpacity;
+    }
+
     if (window.innerWidth <= 768) {
       document.body.classList.add("light-theme");
       return;
     }
-    const scrollY = window.scrollY || window.pageYOffset;
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPercent = maxScroll > 0 ? Math.max(0, Math.min(1, scrollY / maxScroll)) : 0;
     
     if (scrollPercent >= 0.60) {
       document.body.classList.add("light-theme");
