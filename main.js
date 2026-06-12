@@ -145,6 +145,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Check URL query parameters for verification responses
+  const urlParams = new URLSearchParams(window.location.search);
+  const isVerified = urlParams.get("verified");
+  const verifiedEmail = urlParams.get("email");
+  const verifyError = urlParams.get("verify_error");
+
+  if (isVerified === "true" && verifiedEmail) {
+    try {
+      localStorage.setItem("kraitos_joined_waitlist", "true");
+      localStorage.setItem("kraitos_waitlist_email", verifiedEmail);
+    } catch (err) {
+      console.warn("Storage not available to save verification state:", err);
+    }
+    // Clean URL query parameters for a cleaner browser address bar
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  if (verifyError && waitlistError) {
+    if (verifyError === "invalid_or_expired") {
+      waitlistError.textContent = "The verification link is invalid or has expired. Please sign up again.";
+    } else {
+      waitlistError.textContent = "Email verification failed. Please try again.";
+    }
+    
+    // Smooth scroll to the waitlist section if there's an error
+    const waitlistGatePanel = document.getElementById("waitlist-gate-panel");
+    if (waitlistGatePanel) {
+      setTimeout(() => {
+        waitlistGatePanel.scrollIntoView({ behavior: "smooth" });
+      }, 500);
+    }
+  }
+
   // Check initial state from LocalStorage
   const hasJoined = localStorage.getItem("kraitos_joined_waitlist");
   if (hasJoined === "true") {
@@ -156,11 +189,18 @@ document.addEventListener("DOMContentLoaded", () => {
     waitlistForm.addEventListener("submit", (e) => {
       e.preventDefault();
       
-      const email = waitlistEmailInput.value.trim();
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const email = waitlistEmailInput.value.trim().toLowerCase();
+      // Strict regex matching standard characters to prevent invalid formats and SQL injection payloads
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
       
       if (!email) {
         waitlistError.textContent = "Please enter your email address.";
+        waitlistEmailInput.focus();
+        return;
+      }
+      
+      if (email.length > 100) {
+        waitlistError.textContent = "Email address must be 100 characters or less.";
         waitlistEmailInput.focus();
         return;
       }
@@ -169,6 +209,35 @@ document.addEventListener("DOMContentLoaded", () => {
         waitlistError.textContent = "Please enter a valid email address.";
         waitlistEmailInput.focus();
         return;
+      }
+      
+      // Client-side rate-limiting (max 3 submissions within a 5-minute sliding window)
+      const now = Date.now();
+      const limitWindow = 5 * 60 * 1000; // 5 minutes
+      const maxAttempts = 3;
+      
+      let attempts = [];
+      try {
+        attempts = JSON.parse(localStorage.getItem("kraitos_waitlist_attempts") || "[]");
+        if (!Array.isArray(attempts)) attempts = [];
+      } catch (err) {
+        attempts = [];
+      }
+      
+      // Filter out old attempts
+      attempts = attempts.filter(t => typeof t === "number" && now - t < limitWindow);
+      
+      if (attempts.length >= maxAttempts) {
+        waitlistError.textContent = "Too many waitlist requests. Please try again later.";
+        return;
+      }
+      
+      // Record submission attempt
+      try {
+        attempts.push(now);
+        localStorage.setItem("kraitos_waitlist_attempts", JSON.stringify(attempts));
+      } catch (err) {
+        console.warn("Storage not available for rate limiting:", err);
       }
       
       // Clear errors
@@ -182,27 +251,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Pack Form Data
       const formData = new FormData(waitlistForm);
+      const turnstileToken = formData.get("cf-turnstile-response");
 
-      // Submit to Netlify
-      fetch("/", {
+      if (!turnstileToken) {
+        waitlistError.textContent = "Please complete the spam verification challenge.";
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // Submit to Serverless endpoint
+      fetch("/api/join", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData).toString()
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, token: turnstileToken })
       })
-      .then((response) => {
+      .then(async (response) => {
+        const data = await response.json();
         if (!response.ok) {
-          throw new Error("Form submission response not OK");
+          throw new Error(data.error || "Form submission response not OK");
         }
-        // Save state to LocalStorage
-        localStorage.setItem("kraitos_joined_waitlist", "true");
-        localStorage.setItem("kraitos_waitlist_email", email);
         
-        // Trigger unlock transition
-        showWaitlistSuccess(false);
+        // Show Verification Sent confirmation message inside the waitlist form card
+        formContainer.style.transition = "opacity 300ms ease, transform 300ms ease";
+        formContainer.style.opacity = "0";
+        formContainer.style.transform = "translateY(-10px)";
+        
+        setTimeout(() => {
+          formContainer.innerHTML = `
+            <span class="badge" style="color: var(--cyan); background: var(--cyan-dim); border: 1px solid var(--cyan-border);">VERIFICATION SENT</span>
+            <h3 class="build-title">Check your inbox</h3>
+            <p class="build-info" style="line-height: 1.6; margin-bottom: 0; color: var(--text-muted);">
+              We've sent a verification link to <strong style="color: var(--text-main);">${email}</strong>. Please click the link in your email to complete your registration and unlock your download.
+            </p>
+          `;
+          formContainer.style.opacity = "1";
+          formContainer.style.transform = "translateY(0)";
+          adjustSpacerHeight();
+        }, 300);
       })
       .catch((err) => {
-        console.error("Netlify form submission error:", err);
-        waitlistError.textContent = "Something went wrong. Please try again.";
+        console.error("Join Waitlist submission error:", err);
+        waitlistError.textContent = err.message || "Something went wrong. Please try again.";
+        // Reset turnstile challenge so they can solve it again
+        if (typeof window !== "undefined" && window.turnstile) {
+          window.turnstile.reset();
+        }
       })
       .finally(() => {
         submitBtn.textContent = originalBtnText;
