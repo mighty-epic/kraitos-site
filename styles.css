@@ -1104,3 +1104,45 @@ body.light-theme .mobile-demo-video {
     font-size: 2rem;
   }
 }
+
+/* Accessibility Adjustments (IS 5568 / WCAG AA) */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 24px;
+  background: var(--cyan);
+  color: var(--bg-dark);
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.skip-link:focus {
+  top: 24px;
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  box-shadow: 0 0 24px rgba(73, 246, 220, 0.6);
+}
+
+/* Keyboard focus indicators */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 4px;
+  box-shadow: 0 0 16px rgba(73, 246, 220, 0.4);
+}
+
+/* Ensure focus states on default elements */
+a:focus, button:focus {
+  outline: none; /* Handled gracefully by focus-visible for keyboard users */
+}
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--cyan);
+}
