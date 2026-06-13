@@ -5,10 +5,7 @@ const os = require("os");
 let blobsStore = null;
 try {
   const { getStore } = require("@netlify/blobs");
-  // Check if running in a Netlify serverless environment
-  if (process.env.NETLIFY || process.env.NETLIFY_DEV || process.env.NETLIFY_IMAGES_CDN_DOMAIN) {
-    blobsStore = getStore("waitlist");
-  }
+  blobsStore = getStore("waitlist");
 } catch (e) {
   // Silent catch, will fallback to local file
 }
