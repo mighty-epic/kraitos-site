@@ -1,5 +1,4 @@
 const crypto = require("crypto");
-const db = require("./db");
 
 const WAITLIST_SECRET = process.env.WAITLIST_SECRET || "kraitos-default-development-secret-key-123456";
 
@@ -24,58 +23,40 @@ exports.handler = async (event, context) => {
     const decoded = Buffer.from(token, "base64url").toString("utf8");
     const parts = decoded.split(":");
     
-    if (parts.length !== 3) {
+    if (parts.length !== 4) {
       throw new Error("Invalid token format");
     }
 
-    const [email, timestampStr, signature] = parts;
+    const [type, email, timestampStr, signature] = parts;
     const timestamp = parseInt(timestampStr, 10);
 
-    // Verify 24-hour expiration
-    if (Date.now() - timestamp > 24 * 60 * 60 * 1000) {
+    // Verify token type is indeed approval
+    if (type !== "approve") {
+      throw new Error("Invalid token type");
+    }
+
+    // Verify 30-day expiration for manual approvals
+    if (Date.now() - timestamp > 30 * 24 * 60 * 60 * 1000) {
       throw new Error("Token expired");
     }
 
     // Recompute HMAC to verify signature matches
-    const tokenData = `${email}:${timestamp}`;
+    const tokenData = `approve:${email}:${timestamp}`;
     const expectedSignature = crypto.createHmac("sha256", WAITLIST_SECRET).update(tokenData).digest("hex");
 
     if (signature !== expectedSignature) {
       throw new Error("Invalid signature match");
     }
 
-    // Update status in the database to verified
-    await db.setUser(email, {
-      status: "verified"
-    });
-
-    // 2. Submit to Netlify Forms server-side
-    // This logs the email in Netlify Forms submissions dashboard
-    const formParams = new URLSearchParams({
-      "form-name": "waitlist",
-      "email": email
-    });
-
-    const submitUrl = `${protocol}://${host}/`;
-    const formResponse = await fetch(submitUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formParams.toString()
-    });
-
-    if (!formResponse.ok) {
-      console.warn("Netlify Forms submission warning:", formResponse.statusText);
-    }
-
-    // 3. Redirect user to landing page waitlist section with email_verified parameter
+    // 2. Redirect user to download page with success parameters
     return {
       statusCode: 302,
       headers: {
-        Location: `/index.html?email_verified=true&email=${encodeURIComponent(email)}#download`
+        Location: `/download.html?verified=true&email=${encodeURIComponent(email)}`
       }
     };
   } catch (err) {
-    console.error("Verification failed error:", err.message);
+    console.error("Manual approval verification failed:", err.message);
     return {
       statusCode: 302,
       headers: {

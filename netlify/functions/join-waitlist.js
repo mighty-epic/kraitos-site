@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const db = require("./db");
 
 const WAITLIST_SECRET = process.env.WAITLIST_SECRET || "kraitos-default-development-secret-key-123456";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -106,6 +107,12 @@ exports.handler = async (event, context) => {
     const protocol = event.headers["x-forwarded-proto"] || "https";
     const host = event.headers["host"] || "kraitos.app";
     const verifyLink = `${protocol}://${host}/api/verify?token=${signedToken}`;
+
+    // 3.5 Store user in database as pending_verification
+    await db.setUser(email, {
+      status: "pending_verification",
+      timestamp: Date.now()
+    });
 
     // 4. Send Double Opt-in Email via Resend
     if (!RESEND_API_KEY) {

@@ -145,9 +145,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function showEmailVerifiedSuccess(isInstant) {
+    if (!formContainer || !successContainer || !headerWaitlistBtn) return;
+
+    successContainer.innerHTML = `
+      <span class="badge" style="color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.25);">EMAIL VERIFIED</span>
+      <h3 class="build-title">Email Verified!</h3>
+      <p class="build-info" style="line-height: 1.6; margin-bottom: 0; color: var(--text-muted);">
+        Your email has been verified. Your application is now pending review. We will email you with download instructions once your beta access is approved by our team.
+      </p>
+    `;
+
+    if (isInstant) {
+      formContainer.style.display = "none";
+      successContainer.style.display = "block";
+      headerWaitlistBtn.textContent = "Verified ✓";
+      headerWaitlistBtn.classList.add("joined");
+      headerWaitlistBtn.removeAttribute("href");
+      adjustSpacerHeight();
+    } else {
+      // Sleek animated transition
+      formContainer.style.transition = "opacity 300ms ease, transform 300ms ease";
+      formContainer.style.opacity = "0";
+      formContainer.style.transform = "translateY(-10px)";
+      
+      setTimeout(() => {
+        formContainer.style.display = "none";
+        
+        successContainer.style.display = "block";
+        successContainer.style.opacity = "0";
+        successContainer.style.transform = "translateY(10px)";
+        
+        // Force reflow
+        successContainer.offsetHeight;
+        
+        successContainer.style.transition = "opacity 300ms ease, transform 300ms ease";
+        successContainer.style.opacity = "1";
+        successContainer.style.transform = "translateY(0)";
+        
+        headerWaitlistBtn.textContent = "Verified ✓";
+        headerWaitlistBtn.classList.add("joined");
+        headerWaitlistBtn.removeAttribute("href");
+        
+        adjustSpacerHeight();
+      }, 300);
+    }
+  }
+
   // Check URL query parameters for verification responses
   const urlParams = new URLSearchParams(window.location.search);
   const isVerified = urlParams.get("verified");
+  const isEmailVerified = urlParams.get("email_verified");
   const verifiedEmail = urlParams.get("email");
   const verifyError = urlParams.get("verify_error");
 
@@ -159,6 +207,15 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Storage not available to save verification state:", err);
     }
     // Clean URL query parameters for a cleaner browser address bar
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } else if (isEmailVerified === "true" && verifiedEmail) {
+    try {
+      localStorage.setItem("kraitos_email_verified", "true");
+      localStorage.setItem("kraitos_waitlist_email", verifiedEmail);
+    } catch (err) {
+      console.warn("Storage not available to save verification state:", err);
+    }
+    showEmailVerifiedSuccess(false);
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
@@ -180,8 +237,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Check initial state from LocalStorage
   const hasJoined = localStorage.getItem("kraitos_joined_waitlist");
+  const emailVerified = localStorage.getItem("kraitos_email_verified");
+
   if (hasJoined === "true") {
     showWaitlistSuccess(true);
+  } else if (emailVerified === "true") {
+    showEmailVerifiedSuccess(true);
   }
 
   // Handle Form Submission (AJAX integration for Netlify Forms)
@@ -557,6 +618,63 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // Dynamic release versions loading on download page
+  function initDynamicReleases() {
+    const currentBuildInfo = document.getElementById("current-build-info");
+    const currentDownloadBtn = document.getElementById("current-download-btn");
+    const checksumVal = document.getElementById("checksum-val");
+    const previousVersionsList = document.getElementById("previous-versions-list");
+
+    // Exit early if not on download page
+    if (!currentBuildInfo && !currentDownloadBtn && !checksumVal && !previousVersionsList) {
+      return;
+    }
+
+    fetch("/releases/versions.json")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch versions.json");
+        }
+        return response.json();
+      })
+      .then(versions => {
+        if (!versions || versions.length === 0) return;
+
+        // 1. Populate current build
+        const latest = versions[0];
+        if (currentBuildInfo) {
+          currentBuildInfo.innerHTML = `${latest.version} &middot; ${latest.size} &middot; Windows 10/11`;
+        }
+        if (currentDownloadBtn) {
+          currentDownloadBtn.setAttribute("href", latest.url);
+        }
+        if (checksumVal) {
+          checksumVal.textContent = latest.sha256;
+        }
+
+        // 2. Populate previous builds
+        if (previousVersionsList) {
+          previousVersionsList.innerHTML = "";
+          for (let i = 1; i < versions.length; i++) {
+            const v = versions[i];
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <span class="version-tag">${v.version}</span>
+              <a class="version-link" href="${v.url}">
+                Download MSI
+              </a>
+            `;
+            previousVersionsList.appendChild(li);
+          }
+        }
+      })
+      .catch(err => {
+        console.error("Error loading release versions dynamically:", err);
+      });
+  }
+
+  initDynamicReleases();
 
   updateSectionFades();
 });

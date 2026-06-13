@@ -53,6 +53,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/approve"
+  to = "/.netlify/functions/approve"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-api"
+  to = "/.netlify/functions/admin-api"
+  status = 200
+
+[[redirects]]
   from = "/privacy"
   to = "/privacy.html"
   status = 200

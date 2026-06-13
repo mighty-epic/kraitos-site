@@ -20,6 +20,22 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#04080a" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2304080a'/%3E%3Cpath d='M17 46V18h8v11l13-11h11L33 31l17 15H38L25 34v12z' fill='%2349f6dc'/%3E%3C/svg%3E" />
+    <!-- Waitlist Verification Gate -->
+    <script>
+      (function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var isVerifiedQuery = urlParams.get('verified') === 'true';
+        var hasJoinedStorage = false;
+        try {
+          hasJoinedStorage = localStorage.getItem('kraitos_joined_waitlist') === 'true';
+        } catch (e) {
+          console.warn("localStorage access blocked:", e);
+        }
+        if (!isVerifiedQuery && !hasJoinedStorage) {
+          window.location.replace('/#download');
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="styles.css?v=1.3.0" />
   </head>
   <body>
@@ -71,12 +87,13 @@
             <div class="download-panel glass-card">
               <!-- Active MSI Download -->
               <div class="current-build">
-                <span class="badge" style="color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.25);">DOWNLOAD READY</span>
+                <span class="badge" id="current-badge" style="color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.25);">DOWNLOAD READY</span>
                 <h3 class="build-title">Windows Installer</h3>
-                <p class="build-info">v0.3.0-beta &middot; 585 MiB &middot; Windows 10/11</p>
+                <p class="build-info" id="current-build-info"><!-- LATEST_VERSION_START -->v0.3.1-beta &middot; 585 MiB &middot; Windows 10/11<!-- LATEST_VERSION_END --></p>
                 <a
                   class="btn btn-primary"
-                  href="https://github.com/mighty-epic/kraitos-site/releases/download/windows-current/Kraitos-Desktop-Setup.msi"
+                  id="current-download-btn"
+                  <!-- LATEST_LINK_START -->href="/releases/v0.3.1-beta/Kraitos-Desktop-Setup.msi"<!-- LATEST_LINK_END -->
                   aria-label="Download Windows Installer MSI"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -89,14 +106,14 @@
                     <span>SHA256 CHECKSUM:</span>
                     <span id="copy-feedback" class="copy-feedback">Click to copy</span>
                   </div>
-                  <code id="checksum-val" class="checksum-val" title="Click to copy SHA256 checksum">617F478E17CF466E90C1D3E8CD69F93A29A7F7F0D31CE437424B22618AEBA7E5</code>
+                  <code id="checksum-val" class="checksum-val" title="Click to copy SHA256 checksum"><!-- LATEST_SHA_START -->5AAFB0888112F66C3DDF4CBDBDF10CA951F341AE9DB69EEA36B2B4DA5DFD3C33<!-- LATEST_SHA_END --></code>
                 </div>
               </div>
 
               <!-- Previous Builds -->
               <div class="previous-builds">
                 <h4>Previous Versions</h4>
-                <ul class="version-list">
+                <ul class="version-list" id="previous-versions-list">
                   <li>
                     <span class="version-tag">v0.2.0-beta</span>
                     <a class="version-link" href="https://github.com/mighty-epic/emploai/releases/download/v0.2.0-beta/EmploAI.msi">

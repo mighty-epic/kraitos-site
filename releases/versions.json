@@ -1,0 +1,48 @@
+[
+  {
+    "version": "v0.3.1-beta",
+    "date": "2026-06-13",
+    "size": "585 MiB",
+    "sha256": "5AAFB0888112F66C3DDF4CBDBDF10CA951F341AE9DB69EEA36B2B4DA5DFD3C33",
+    "url": "/releases/v0.3.1-beta/Kraitos-Desktop-Setup.msi",
+    "status": "DOWNLOAD READY",
+    "badgeColor": "#10b981",
+    "badgeBg": "rgba(16, 185, 129, 0.15)",
+    "badgeBorder": "rgba(16, 185, 129, 0.25)"
+  },
+  {
+    "version": "v0.3.0-beta",
+    "date": "2026-06-11",
+    "size": "585 MiB",
+    "sha256": "617F478E17CF466E90C1D3E8CD69F93A29A7F7F0D31CE437424B22618AEBA7E5",
+    "url": "https://github.com/mighty-epic/kraitos-site/releases/download/windows-current/Kraitos-Desktop-Setup.msi",
+    "status": "PREVIOUS",
+    "badgeColor": "#10b981",
+    "badgeBg": "rgba(16, 185, 129, 0.15)",
+    "badgeBorder": "rgba(16, 185, 129, 0.25)"
+  },
+  {
+    "version": "v0.2.0-beta",
+    "date": "2026-05-15",
+    "size": "580 MiB",
+    "sha256": "",
+    "url": "https://github.com/mighty-epic/emploai/releases/download/v0.2.0-beta/EmploAI.msi",
+    "status": "PREVIOUS"
+  },
+  {
+    "version": "v0.1.5-beta",
+    "date": "2026-04-10",
+    "size": "575 MiB",
+    "sha256": "",
+    "url": "https://github.com/mighty-epic/emploai/releases/download/v0.1.5-beta/EmploAI.msi",
+    "status": "PREVIOUS"
+  },
+  {
+    "version": "v0.1.0-beta",
+    "date": "2026-03-01",
+    "size": "570 MiB",
+    "sha256": "",
+    "url": "https://github.com/mighty-epic/emploai/releases/download/v0.1.0-beta/EmploAI.msi",
+    "status": "PREVIOUS"
+  }
+]

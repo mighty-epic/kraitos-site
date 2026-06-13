@@ -1,0 +1,10 @@
+{
+  "name": "kraitos-site",
+  "version": "1.0.0",
+  "description": "Kraitos static site and waitlist backend",
+  "main": "main.js",
+  "dependencies": {
+    "@netlify/blobs": "^8.2.1"
+  },
+  "private": true
+}
