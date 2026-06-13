@@ -3,19 +3,29 @@ const path = require("path");
 const os = require("os");
 
 let blobsStore = null;
-try {
-  const { getStore } = require("@netlify/blobs");
-  blobsStore = getStore("waitlist");
-} catch (e) {
-  console.error("Netlify Blobs failed to initialize:", e);
+let blobsStoreInitialized = false;
+
+function getBlobsStore() {
+  if (blobsStoreInitialized) {
+    return blobsStore;
+  }
+  blobsStoreInitialized = true;
+  try {
+    const { getStore } = require("@netlify/blobs");
+    blobsStore = getStore("waitlist");
+  } catch (e) {
+    console.error("Netlify Blobs failed to initialize in request context:", e);
+  }
+  return blobsStore;
 }
 
 const tempDbPath = path.join(os.tmpdir(), "kraitos_waitlist_db.json");
 
 async function readDb() {
-  if (blobsStore) {
+  const store = getBlobsStore();
+  if (store) {
     try {
-      const data = await blobsStore.get("all_users", { type: "json" });
+      const data = await store.get("all_users", { type: "json" });
       return data || {};
     } catch (err) {
       console.error("Error reading from Netlify Blobs:", err);
@@ -34,9 +44,10 @@ async function readDb() {
 }
 
 async function writeDb(data) {
-  if (blobsStore) {
+  const store = getBlobsStore();
+  if (store) {
     try {
-      await blobsStore.setJSON("all_users", data);
+      await store.setJSON("all_users", data);
     } catch (err) {
       console.error("Error writing to Netlify Blobs:", err);
     }
