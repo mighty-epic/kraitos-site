@@ -650,8 +650,27 @@
         let currentFilter = "all";
         let searchQuery = "";
 
+        // Safe SessionStorage Helpers
+        function getSessionPassword() {
+          try {
+            return sessionStorage.getItem("kraitos_admin_password") || "";
+          } catch (e) {
+            return "";
+          }
+        }
+        function setSessionPassword(pwd) {
+          try {
+            sessionStorage.setItem("kraitos_admin_password", pwd);
+          } catch (e) {}
+        }
+        function removeSessionPassword() {
+          try {
+            sessionStorage.removeItem("kraitos_admin_password");
+          } catch (e) {}
+        }
+
         // Check for existing session token
-        const savedPassword = sessionStorage.getItem("kraitos_admin_password");
+        const savedPassword = getSessionPassword();
         if (savedPassword) {
           authenticate(savedPassword);
         }
@@ -665,7 +684,7 @@
 
         // Sign Out
         logoutBtn.addEventListener("click", () => {
-          sessionStorage.removeItem("kraitos_admin_password");
+          removeSessionPassword();
           window.location.reload();
         });
 
@@ -686,7 +705,7 @@
             }
 
             const data = await response.json();
-            sessionStorage.setItem("kraitos_admin_password", password);
+            setSessionPassword(password);
             
             // Transition UI
             authGate.style.display = "none";
@@ -697,7 +716,7 @@
             renderTable();
           } catch (err) {
             authError.textContent = err.message;
-            sessionStorage.removeItem("kraitos_admin_password");
+            removeSessionPassword();
           }
         }
 
@@ -824,7 +843,7 @@
           button.classList.add("loading");
           button.disabled = true;
 
-          const password = sessionStorage.getItem("kraitos_admin_password");
+          const password = getSessionPassword();
 
           try {
             const response = await fetch("/api/admin-api", {
