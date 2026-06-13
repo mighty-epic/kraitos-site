@@ -7,7 +7,7 @@ try {
   const { getStore } = require("@netlify/blobs");
   blobsStore = getStore("waitlist");
 } catch (e) {
-  // Silent catch, will fallback to local file
+  console.error("Netlify Blobs failed to initialize:", e);
 }
 
 const tempDbPath = path.join(os.tmpdir(), "kraitos_waitlist_db.json");
