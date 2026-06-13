@@ -14,7 +14,21 @@ function getBlobsStore() {
     const { getStore } = require("@netlify/blobs");
     blobsStore = getStore("waitlist");
   } catch (e) {
-    console.error("Netlify Blobs failed to initialize in request context:", e);
+    if (e.name === "MissingBlobsEnvironmentError" && process.env.SITE_ID && process.env.NETLIFY_FUNCTIONS_TOKEN) {
+      try {
+        const { getStore } = require("@netlify/blobs");
+        blobsStore = getStore({
+          name: "waitlist",
+          siteID: process.env.SITE_ID,
+          token: process.env.NETLIFY_FUNCTIONS_TOKEN
+        });
+        console.log("Netlify Blobs initialized manually with SITE_ID and NETLIFY_FUNCTIONS_TOKEN");
+      } catch (manualErr) {
+        console.error("Netlify Blobs failed manual initialization:", manualErr);
+      }
+    } else {
+      console.error("Netlify Blobs failed to initialize in request context:", e);
+    }
   }
   return blobsStore;
 }

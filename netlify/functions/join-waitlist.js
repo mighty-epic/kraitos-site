@@ -12,12 +12,6 @@ const RATE_LIMIT_WINDOW = 5 * 60 * 1000; // 5 minutes
 const MAX_REQUESTS = 5;
 
 exports.handler = async (event, context) => {
-  console.log("DEBUG ENV KEYS:", Object.keys(process.env).filter(k => k.includes("BLOB") || k.includes("NETLIFY") || k.includes("SITE")));
-  console.log("DEBUG CONTEXT KEYS:", Object.keys(context || {}));
-  if (context && context.clientContext) {
-    console.log("DEBUG CLIENT CONTEXT KEYS:", Object.keys(context.clientContext));
-  }
-  
   // Enforce POST
   if (event.httpMethod !== "POST") {
     return {
