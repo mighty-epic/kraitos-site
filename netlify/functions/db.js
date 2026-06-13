@@ -14,15 +14,17 @@ function getBlobsStore() {
     const { getStore } = require("@netlify/blobs");
     blobsStore = getStore("waitlist");
   } catch (e) {
-    if (e.name === "MissingBlobsEnvironmentError" && process.env.SITE_ID && process.env.NETLIFY_FUNCTIONS_TOKEN) {
+    const siteID = process.env.SITE_ID;
+    const token = process.env.NETLIFY_AUTH_TOKEN || process.env.NETLIFY_FUNCTIONS_TOKEN;
+    if (e.name === "MissingBlobsEnvironmentError" && siteID && token) {
       try {
         const { getStore } = require("@netlify/blobs");
         blobsStore = getStore({
           name: "waitlist",
-          siteID: process.env.SITE_ID,
-          token: process.env.NETLIFY_FUNCTIONS_TOKEN
+          siteID: siteID,
+          token: token
         });
-        console.log("Netlify Blobs initialized manually with SITE_ID and NETLIFY_FUNCTIONS_TOKEN");
+        console.log("Netlify Blobs initialized manually with Site ID and custom Token");
       } catch (manualErr) {
         console.error("Netlify Blobs failed manual initialization:", manualErr);
       }
