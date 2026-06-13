@@ -76,55 +76,6 @@ exports.handler = async (event, context) => {
       const host = event.headers["host"] || "kraitos.app";
       const approvalUrl = `${protocol}://${host}/api/approve?token=${signedToken}`;
 
-      let emailSent = false;
-      let debugMode = false;
-
-      if (!RESEND_API_KEY) {
-        // Local/Dev Mode Fallback: log link and return it in response so owner can copy it
-        console.log("\n==================================================");
-        printDevApproval(email, approvalUrl);
-        console.log("==================================================\n");
-        debugMode = true;
-      } else {
-        // Send email via Resend API
-        const emailBody = `
-          <div style="background-color: #04080a; color: #f8fafc; font-family: sans-serif; padding: 40px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(73, 246, 220, 0.2);">
-            <h1 style="color: #49f6dc; font-size: 24px; margin-bottom: 20px;">Beta Access Approved</h1>
-            <p style="color: #94a3b8; font-size: 16px; line-height: 1.6;">Great news! Your application for Kraitos has been approved. You can now access the secure download portal and get the latest desktop installer by clicking the button below:</p>
-            <div style="margin: 32px 0; text-align: center;">
-              <a href="${approvalUrl}" style="background-color: #49f6dc; color: #04080a; padding: 12px 28px; border-radius: 6px; font-weight: bold; text-decoration: none; display: inline-block; font-size: 16px;">Download Kraitos Installer</a>
-            </div>
-            <p style="color: #64748b; font-size: 12px;">This approval link is valid for 30 days. If you experience any issues, please reply to this email.</p>
-          </div>
-        `;
-
-        const resendResponse = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${RESEND_API_KEY}`
-          },
-          body: JSON.stringify({
-            from: "Kraitos Access <waitlist@kraitos.app>",
-            to: email,
-            subject: "Your Kraitos Beta Access is Approved!",
-            html: emailBody
-          })
-        });
-
-        const resendResult = await resendResponse.json();
-        if (resendResponse.ok) {
-          emailSent = true;
-        } else {
-          console.error("Resend API failed to send approval:", resendResult);
-          return {
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({ error: "Failed to send approval email via Resend API." })
-          };
-        }
-      }
-
       // Update user status in database
       await db.setUser(email, {
         status: "approved",
@@ -137,8 +88,6 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           success: true,
-          emailSent,
-          debugMode,
           approvalLink: approvalUrl
         })
       };

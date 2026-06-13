@@ -3,7 +3,7 @@ const db = require("./db");
 
 const WAITLIST_SECRET = process.env.WAITLIST_SECRET || "kraitos-default-development-secret-key-123456";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET || "1x00000000000000000000000000000000"; // Default Turnstile test secret
+const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET || "1x0000000000000000000000000000000AA"; // Default Turnstile test secret
 
 // Extremely basic in-memory IP rate limiter for serverless container reuse
 // Note: In serverless, container state resets. This is a best-effort edge shield.
@@ -97,80 +97,17 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // 3. Generate Secure Cryptographic Token (expires in 24 hours)
-    const timestamp = Date.now();
-    const tokenData = `${email}:${timestamp}`;
-    const signature = crypto.createHmac("sha256", WAITLIST_SECRET).update(tokenData).digest("hex");
-    const signedToken = Buffer.from(`${tokenData}:${signature}`).toString("base64url");
-
-    // Resolve site host dynamically
-    const protocol = event.headers["x-forwarded-proto"] || "https";
-    const host = event.headers["host"] || "kraitos.app";
-    const verifyLink = `${protocol}://${host}/api/verify?token=${signedToken}`;
-
-    // 3.5 Store user in database as pending_verification
+    // 3. Store user in database directly as 'verified' (awaiting admin approval)
     await db.setUser(email, {
-      status: "pending_verification",
+      status: "verified",
       timestamp: Date.now()
     });
-
-    // 4. Send Double Opt-in Email via Resend
-    if (!RESEND_API_KEY) {
-      // Local dev mode fallback: log link to terminal and return it to client for testing
-      console.log("\n==================================================");
-      console.log(`DEV MODE: Waitlist request received for: ${email}`);
-      console.log(`Verification Link: ${verifyLink}`);
-      console.log("==================================================\n");
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: true,
-          debug: true,
-          message: "Dev Mode: Verification email simulated. Link logged to console.",
-          devLink: `/api/verify?token=${signedToken}`
-        })
-      };
-    }
-
-    // Call Resend API to dispatch email
-    const resendResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${RESEND_API_KEY}`
-      },
-      body: JSON.stringify({
-        from: "Kraitos Waitlist <waitlist@kraitos.app>",
-        to: email,
-        subject: "Verify your email for Kraitos Beta Access",
-        html: `
-          <div style="background-color: #04080a; color: #f8fafc; font-family: sans-serif; padding: 40px; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(73, 246, 220, 0.2);">
-            <h1 style="color: #49f6dc; font-size: 24px; margin-bottom: 20px;">Join Kraitos Waitlist</h1>
-            <p style="color: #94a3b8; font-size: 16px; line-height: 1.6;">Thank you for requesting beta access to Kraitos. To complete your waitlist registration and unlock the installer download, please verify your email address by clicking the link below:</p>
-            <div style="margin: 32px 0; text-align: center;">
-              <a href="${verifyLink}" style="background-color: #49f6dc; color: #04080a; padding: 12px 28px; border-radius: 6px; font-weight: bold; text-decoration: none; display: inline-block; font-size: 16px;">Verify Email Address</a>
-            </div>
-            <p style="color: #64748b; font-size: 12px;">This link will expire in 24 hours. If you did not request this, you can safely ignore this email.</p>
-          </div>
-        `
-      })
-    });
-
-    const resendResult = await resendResponse.json();
-    if (!resendResponse.ok) {
-      console.error("Resend API error:", resendResult);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "Failed to dispatch verification email. Please try again later." })
-      };
-    }
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        message: "Verification email sent. Please check your inbox!"
+        message: "Successfully registered on the waitlist! Your application is pending review."
       })
     };
   } catch (err) {

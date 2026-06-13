@@ -333,17 +333,17 @@ document.addEventListener("DOMContentLoaded", () => {
           throw new Error(data.error || "Form submission response not OK");
         }
         
-        // Show Verification Sent confirmation message inside the waitlist form card
+        // Show waitlist confirmation message inside the waitlist form card
         formContainer.style.transition = "opacity 300ms ease, transform 300ms ease";
         formContainer.style.opacity = "0";
         formContainer.style.transform = "translateY(-10px)";
         
         setTimeout(() => {
           formContainer.innerHTML = `
-            <span class="badge" style="color: var(--cyan); background: var(--cyan-dim); border: 1px solid var(--cyan-border);">VERIFICATION SENT</span>
-            <h3 class="build-title">Check your inbox</h3>
+            <span class="badge" style="color: var(--cyan); background: var(--cyan-dim); border: 1px solid var(--cyan-border);">WAITLIST JOINED</span>
+            <h3 class="build-title">You're on the list!</h3>
             <p class="build-info" style="line-height: 1.6; margin-bottom: 0; color: var(--text-muted);">
-              We've sent a verification link to <strong style="color: var(--text-main);">${email}</strong>. Please click the link in your email to complete your registration and unlock your download.
+              Thank you for registering. Your application for Kraitos is now pending review. We will notify you at <strong style="color: var(--text-main);">${email}</strong> once your beta access is approved by our team.
             </p>
           `;
           formContainer.style.opacity = "1";

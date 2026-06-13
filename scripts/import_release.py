@@ -68,25 +68,17 @@ def main():
         version = increment_version(latest_version)
         print(f"Auto-detected latest version: {latest_version}. Incrementing to: {version}")
         
-    # Ensure releases directory exists
-    release_version_dir = os.path.join(SITE_ROOT, "releases", version)
-    os.makedirs(release_version_dir, exist_ok=True)
+    # Determine the URL (Construct the GitHub Release download URL)
+    release_url = args.url if hasattr(args, 'url') and args.url else f"https://github.com/mighty-epic/kraitos-site/releases/download/{version}/Kraitos-Desktop-Setup.msi"
     
-    dest_msi_name = "Kraitos-Desktop-Setup.msi"
-    dest_path = os.path.join(release_version_dir, dest_msi_name)
-    
-    # Calculate checksum and size
+    # Calculate checksum and size from the local source file
     sha256_hash = calculate_sha256(source_path)
     file_size = get_file_size_mib(source_path)
     
     print(f"Source details:")
     print(f"  Size: {file_size}")
     print(f"  SHA256: {sha256_hash}")
-    
-    # Copy the file
-    print(f"Copying installer to: {dest_path}...")
-    shutil.copy2(source_path, dest_path)
-    print("Copy completed successfully.")
+    print(f"  Target Download URL: {release_url}")
     
     # Update versions.json
     # 1. Update previous versions' statuses
@@ -100,7 +92,7 @@ def main():
         "date": datetime.today().strftime('%Y-%m-%d'),
         "size": file_size,
         "sha256": sha256_hash,
-        "url": f"/releases/{version}/{dest_msi_name}",
+        "url": release_url,
         "status": "DOWNLOAD READY",
         "badgeColor": "#10b981",
         "badgeBg": "rgba(16, 185, 129, 0.15)",
@@ -120,8 +112,20 @@ def main():
             
         # 1. Replace download button href
         pattern_href = r'<!-- LATEST_LINK_START -->.*?<!-- LATEST_LINK_END -->'
-        replacement_href = f'<!-- LATEST_LINK_START -->href="{new_release["url"]}"<!-- LATEST_LINK_END -->'
-        html_content, count1 = re.subn(pattern_href, replacement_href, html_content)
+        replacement_href = f'''<!-- LATEST_LINK_START -->
+                <a
+                  class="btn btn-primary"
+                  id="current-download-btn"
+                  href="{new_release["url"]}"
+                  aria-label="Download Windows Installer MSI"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                  </svg>
+                  Download MSI
+                </a>
+                <!-- LATEST_LINK_END -->'''
+        html_content, count1 = re.subn(pattern_href, replacement_href, html_content, flags=re.DOTALL)
         
         # 2. Replace build info text
         pattern_info = r'<!-- LATEST_VERSION_START -->.*?<!-- LATEST_VERSION_END -->'
